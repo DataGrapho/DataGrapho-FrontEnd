@@ -5,7 +5,6 @@
  */
 
 import { createRouter, createWebHistory } from 'vue-router'
-import DefaultLayout from '../layouts/DefaultLayout.vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
 
 const router = createRouter({
@@ -45,17 +44,6 @@ const router = createRouter({
           path: '',
           name: 'reset-password',
           component: () => import('@/features/auth/pages/ResetPasswordPage.vue'),
-        },
-      ],
-    },
-    {
-      path: '/app',
-      component: DefaultLayout,
-      children: [
-        {
-          path: '',
-          name: 'home',
-          component: () => import('@/features/home/pages/HomePage.vue'),
         },
       ],
     },
