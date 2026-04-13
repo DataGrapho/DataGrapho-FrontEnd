@@ -1,28 +1,44 @@
 <template>
-  <v-text-field
-    :model-value="modelValue"
-    :label="label"
-    :placeholder="placeholder"
-    :type="type"
-    :disabled="disabled"
-    :readonly="readonly"
-    :error="error"
-    :error-messages="errorMessages"
-    :hint="hint"
-    :persistent-hint="persistentHint"
-    :clearable="clearable"
-    variant="outlined"
-    color="primary"
-    class="input"
-    hide-details="auto"
-    @update:model-value="onUpdate"
-  />
+  <div :class="['input-wrapper', { 'input-wrapper--with-field-label': !!fieldLabel }]">
+    <label v-if="fieldLabel" :for="id" class="input-field-label text-label-base">{{ fieldLabel }}</label>
+
+    <v-text-field
+      v-bind="attrs"
+      :id="id"
+      :model-value="modelValue"
+      :label="label"
+      :placeholder="placeholder"
+      :type="type"
+      :disabled="disabled"
+      :readonly="readonly"
+      :error="error"
+      :error-messages="errorMessages"
+      :hint="hint"
+      :persistent-hint="persistentHint"
+      :clearable="clearable"
+      variant="outlined"
+      color="primary"
+      class="input"
+      hide-details="auto"
+      @update:model-value="onUpdate"
+    />
+  </div>
 </template>
 
 <script lang="ts" setup>
+  import { useAttrs } from 'vue'
+
+  defineOptions({
+    inheritAttrs: false,
+  })
+
+  const attrs = useAttrs()
+
   const props = withDefaults(defineProps<{
+    id?: string
     modelValue?: string
     label?: string
+    fieldLabel?: string
     placeholder?: string
     type?: string
     disabled?: boolean
@@ -33,8 +49,10 @@
     persistentHint?: boolean
     clearable?: boolean
   }>(), {
+    id: undefined,
     modelValue: '',
     label: '',
+    fieldLabel: '',
     placeholder: '',
     type: 'text',
     disabled: false,
@@ -56,6 +74,16 @@
 </script>
 
 <style scoped>
+  .input-wrapper--with-field-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .input-field-label {
+    color: rgb(var(--v-theme-on-surface-variant));
+  }
+
   .input {
     --v-field-border-width: 1px;
   }
