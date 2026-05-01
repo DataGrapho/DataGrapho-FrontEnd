@@ -16,11 +16,12 @@
 
       <!-- Chat Sidebar (optional by default, enabled for /app route) -->
       <aside v-if="showChatSidebar" class="chat-sidebar-wrapper">
-        <slot
-          name="chat-sidebar"
-          :collapsed="chatSidebarCollapsed"
-          :toggle-collapsed="toggleChatSidebar"
-        />
+        <slot name="chat-sidebar" :toggle-collapsed="toggleChatSidebar">
+          <ChatSidebar
+            :collapsed="chatSidebarCollapsed"
+            @toggle="toggleChatSidebar"
+          />
+        </slot>
       </aside>
 
       <!-- Main Content -->
@@ -57,6 +58,7 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue'
   import AppSidebar from '@/shared/components/app-sidebar/AppSidebar.vue'
+  import ChatSidebar from '@/features/chat/components/sidebar/ChatSidebar.vue'
   import { useAppTheme } from '@/composables/useAppTheme'
 
   const props = withDefaults(

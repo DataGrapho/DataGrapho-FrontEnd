@@ -6,6 +6,7 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import AuthLayout from '../layouts/AuthLayout.vue'
+import DefaultLayout from '../layouts/DefaultLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +45,20 @@ const router = createRouter({
           path: '',
           name: 'reset-password',
           component: () => import('@/features/auth/pages/ResetPasswordPage.vue'),
+        },
+      ],
+    },
+    {
+      path: '/app',
+      component: DefaultLayout,
+      props: {
+        showChatSidebar: true,
+      },
+      children: [
+        {
+          path: '',
+          name: 'app-chat',
+          component: () => import('@/features/chat/pages/ChatPage.vue'),
         },
       ],
     },
