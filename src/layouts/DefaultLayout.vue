@@ -4,7 +4,6 @@
       class="app-shell"
       :style="{ gridTemplateColumns: shellGridColumns }"
     >
-      <!-- App Sidebar (always present by default) -->
       <aside v-if="showAppSidebar" class="app-sidebar-wrapper">
         <slot name="app-sidebar" :toggle-maximized="toggleSiteSidebar">
           <AppSidebar
@@ -14,8 +13,7 @@
         </slot>
       </aside>
 
-      <!-- Chat Sidebar (optional by default, enabled for /app route) -->
-      <aside v-if="showChatSidebar" class="chat-sidebar-wrapper">
+      <aside v-if="shouldShowChatSidebar" class="chat-sidebar-wrapper">
         <slot name="chat-sidebar" :toggle-collapsed="toggleChatSidebar">
           <ChatSidebar
             :collapsed="chatSidebarCollapsed"
@@ -24,26 +22,12 @@
         </slot>
       </aside>
 
-      <!-- Main Content -->
       <main class="app-main">
-        <header class="app-main__topbar">
+        <header v-if="showTopbar" class="app-main__topbar">
           <h1 class="text-label-large">
-            DataGrapho AI
+            {{ pageTitle }}
           </h1>
-          <v-menu location="bottom end">
-            <template #activator="{ props: menuProps }">
-              <v-btn
-                density="compact"
-                icon="mdi-dots-horizontal"
-                variant="text"
-                v-bind="menuProps"
-              />
-            </template>
-            <v-list class="app-main__actions-menu" density="compact" min-width="160">
-              <v-list-item prepend-icon="mdi-pencil-outline" title="Renomear" />
-              <v-list-item prepend-icon="mdi-delete-outline" title="Excluir" />
-            </v-list>
-          </v-menu>
+          <ActionMenu :items="topbarActions" />
         </header>
 
         <section class="app-main__content">
@@ -57,7 +41,9 @@
 
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue'
+  import { useRoute } from 'vue-router'
   import AppSidebar from '@/shared/components/app-sidebar/AppSidebar.vue'
+  import ActionMenu, { type ActionMenuItem } from '@/shared/components/action-menu/ActionMenu.vue'
   import ChatSidebar from '@/features/chat/components/sidebar/ChatSidebar.vue'
   import { useAppTheme } from '@/composables/useAppTheme'
 
@@ -75,12 +61,29 @@
   const siteSidebarMaximized = ref(true)
   const chatSidebarCollapsed = ref(true)
   const { initTheme } = useAppTheme()
+  const topbarActions: ActionMenuItem[] = [
+    { label: 'Renomear', value: 'rename', icon: 'mdi-pencil-outline' },
+    { label: 'Excluir', value: 'delete', icon: 'mdi-delete-outline' },
+  ]
+  const route = useRoute()
+  const pageTitle = computed(() => typeof route.meta.title === 'string' ? route.meta.title : 'DataGrapho AI')
+  const showTopbar = computed(() => route.meta.hideTopbar !== true)
+  const shouldShowChatSidebar = computed(() => route.name === 'app-chat' && props.showChatSidebar)
 
   const shellGridColumns = computed(() => {
-    const appSidebarWidth = props.showAppSidebar ? (siteSidebarMaximized.value ? 188 : 61) : 0
-    const chatSidebarWidth = props.showChatSidebar ? (chatSidebarCollapsed.value ? 57 : 240) : 0
+    const columns = []
 
-    return `${appSidebarWidth}px ${chatSidebarWidth}px minmax(0, 1fr)`
+    if (props.showAppSidebar) {
+      columns.push(`${siteSidebarMaximized.value ? 188 : 61}px`)
+    }
+
+    if (shouldShowChatSidebar.value) {
+      columns.push(`${chatSidebarCollapsed.value ? 57 : 240}px`)
+    }
+
+    columns.push('minmax(0, 1fr)')
+
+    return columns.join(' ')
   })
 
   function toggleSiteSidebar () {
@@ -140,15 +143,12 @@
     display: flex;
     min-height: 0;
     flex: 1;
+    overflow: hidden;
   }
 
-  .app-main__actions-menu :deep(.v-list-item-title) {
-    font-family: var(--df-font-body);
-    font-size: 0.875rem;
+  .app-main__content > * {
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
   }
-
-  .app-main__actions-menu :deep(.v-list-item__prepend) {
-    margin-inline-end: 8px;
-  }
-
 </style>

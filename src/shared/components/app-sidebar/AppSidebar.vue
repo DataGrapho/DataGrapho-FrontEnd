@@ -27,8 +27,18 @@
     </div>
 
     <nav class="app-sidebar__nav">
-      <AppSidebarNavLink active icon="chat-ai-4-line" label="Chatbot IA" to="/app" />
-      <AppSidebarNavLink icon="table-view" label="Arquivo" to="/app" />
+      <AppSidebarNavLink
+        :active="route.name === 'app-chat'"
+        icon="chat-ai-4-line"
+        label="Chatbot IA"
+        to="/app"
+      />
+      <AppSidebarNavLink
+        :active="route.name === 'app-datatable'"
+        icon="table-view"
+        label="Datatable"
+        to="/app/datatable"
+      />
     </nav>
 
     <div class="app-sidebar__footer">
@@ -52,6 +62,7 @@
 
 <script setup lang="ts">
   import { defineComponent, h } from 'vue'
+  import { useRoute } from 'vue-router'
   import AppSidebarActionButton from './AppSidebarActionButton.vue'
   import AppSidebarNavLink from './AppSidebarNavLink.vue'
   import { useAppTheme } from '@/composables/useAppTheme'
@@ -73,6 +84,7 @@
   }>()
 
   const { isDarkTheme, toggleTheme } = useAppTheme()
+  const route = useRoute()
 
 </script>
 
