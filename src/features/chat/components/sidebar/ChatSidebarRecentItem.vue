@@ -5,7 +5,7 @@
     type="button"
   >
     <span class="chat-sidebar__recent-item-text">{{ label }}</span>
-    <v-menu location="bottom end">
+    <ActionMenu :items="recentActions" title="Acoes do chat">
       <template #activator="{ props: menuProps }">
         <button
           class="chat-sidebar__recent-item-menu"
@@ -17,19 +17,22 @@
           <v-icon icon="mdi-dots-horizontal" size="18" />
         </button>
       </template>
-      <v-list class="chat-sidebar__actions-menu" density="compact" min-width="160">
-        <v-list-item prepend-icon="mdi-pencil-outline" title="Renomear" />
-        <v-list-item prepend-icon="mdi-delete-outline" title="Excluir" />
-      </v-list>
-    </v-menu>
+    </ActionMenu>
   </button>
 </template>
 
 <script setup lang="ts">
+  import ActionMenu, { type ActionMenuItem } from '@/shared/components/action-menu/ActionMenu.vue'
+
   defineProps<{
     label: string
     active?: boolean
   }>()
+
+  const recentActions: ActionMenuItem[] = [
+    { label: 'Renomear', value: 'rename', icon: 'mdi-pencil-outline' },
+    { label: 'Excluir', value: 'delete', icon: 'mdi-delete-outline' },
+  ]
 </script>
 
 <style scoped>
@@ -72,15 +75,6 @@
 
   .chat-sidebar__recent-item-menu:hover {
     background: rgb(var(--v-theme-surface-variant));
-  }
-
-  .chat-sidebar__actions-menu :deep(.v-list-item-title) {
-    font-family: var(--df-font-body);
-    font-size: 0.875rem;
-  }
-
-  .chat-sidebar__actions-menu :deep(.v-list-item__prepend) {
-    margin-inline-end: 8px;
   }
 
   .chat-sidebar__recent-item:hover {

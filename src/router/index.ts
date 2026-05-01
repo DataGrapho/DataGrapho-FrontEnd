@@ -51,14 +51,27 @@ const router = createRouter({
     {
       path: '/app',
       component: DefaultLayout,
-      props: {
-        showChatSidebar: true,
-      },
+      props: route => ({
+        showChatSidebar: route.meta.showChatSidebar === true,
+      }),
       children: [
         {
           path: '',
           name: 'app-chat',
+          meta: {
+            showChatSidebar: true,
+            title: 'DataGrapho AI',
+          },
           component: () => import('@/features/chat/pages/ChatPage.vue'),
+        },
+        {
+          path: 'datatable',
+          name: 'app-datatable',
+          meta: {
+            hideTopbar: true,
+            title: 'Datatable',
+          },
+          component: () => import('@/features/datatable/pages/DeparaDatatablePage.vue'),
         },
       ],
     },
