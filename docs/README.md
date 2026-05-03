@@ -1,14 +1,6 @@
-# DataGrapho-Infra
-
-Repositório criado para armazenar e centralizar o CI/CD do projeto.
-
-## Organização de Branches
-
-feature/exemplo-issue ---Pull Request (1)---> infra/pipeline-frontend
-
 ## Fluxo da Pipeline
 
-![diagrama-pipeline-frontend](./docs/diagrama-frontend.jpg)
+![diagrama-pipeline-frontend](./diagrama-frontend.jpg)
 
 ### Primeiro Fluxo (feature/*)
 1. Desenvolvedor efetua push para uma branch `feature/*`
