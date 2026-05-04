@@ -9,9 +9,9 @@ import type {
 // TODO: Trocar AUTH_ENDPOINTS com as rotas reais de autenticação do backend.
 
 const AUTH_ENDPOINTS = {
-  login: '/auth/login',
-  requestPasswordReset: '/auth/password/forgot',
-  resetPassword: '/auth/password/reset',
+  login: '/api/auth/login/',
+  requestPasswordReset: '/api/auth/password/forgot/',
+  resetPassword: '/api/auth/password/reset/',
 } as const
 
 async function post<TResponse>(endpoint: string, payload: Record<string, unknown>) {
