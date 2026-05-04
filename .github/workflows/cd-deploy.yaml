@@ -1,7 +1,12 @@
 name: CD-Deploy-Production
 
 on:
-  workflow_call:
+  workflow_run:
+    workflows: ["CI-Build"]
+    types:
+      - completed
+    branches:
+      - 'main'
     secrets:
       SSH_HOST:
         required: true
@@ -18,6 +23,7 @@ concurrency:
 
 jobs:
   deploy-fe:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: self-hosted
     steps:
       - name: ssh deploy
