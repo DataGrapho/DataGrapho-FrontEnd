@@ -28,7 +28,3 @@ jobs:
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
       SONAR_SOURCES: ${{ secrets.SONAR_SOURCES }}
-
-  version-tag:
-    uses: ./.github/workflows/version-tag.yaml
-    needs: cd-deploy
