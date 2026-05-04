@@ -1,0 +1,156 @@
+@use 'vuetify/settings' with (
+  $typography: (
+    'h1':         ('size': 2.5rem,   'weight': 700, 'line-height': 1.2,      'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'h2':         ('size': 2rem,     'weight': 700, 'line-height': 1.25,     'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'h3':         ('size': 1.8rem,   'weight': 700, 'line-height': 1.25,     'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'h4':         ('size': 1.5rem,   'weight': 700, 'line-height': 1.333333, 'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'h5':         ('size': 1.25rem,  'weight': 700, 'line-height': 1.4,      'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'h6':         ('size': 1rem,     'weight': 700, 'line-height': 1.5,      'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'subtitle-1': ('size': 1.25rem,  'weight': 400, 'line-height': 1.5,      'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'subtitle-2': ('size': 0.875rem, 'weight': 700, 'line-height': 1.428571, 'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'body-1':     ('size': 1rem,     'weight': 400, 'line-height': 1.5,      'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'body-2':     ('size': 0.875rem, 'weight': 400, 'line-height': 1.428571, 'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'button':     ('size': 1rem,     'weight': 700, 'line-height': 1.5,      'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'caption':    ('size': 0.8rem,   'weight': 400, 'line-height': 1.5625,   'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+    'overline':   ('size': 0.8rem,   'weight': 700, 'line-height': 1.40625,  'letter-spacing': normal, 'font-family': '"Sansation", sans-serif', 'text-transform': none),
+  ),
+  $body-font-family: '"Sansation", sans-serif',
+  $border-radius-root: 6px,
+);
+
+:root {
+  --df-space-xs: 0.25rem;
+  --df-space-sm: 0.5rem;
+  --df-space-md: 1rem;
+  --df-space-lg: 1.5rem;
+  --df-space-xl: 3rem;
+
+  --df-radius-none: 0;
+  --df-radius-sm: 4px;
+  --df-radius-base: 6px;
+  --df-radius-md: 10px;
+  --df-radius-lg: 16px;
+  --df-radius-xl: 20px;
+  --df-radius-full: 9999px;
+
+  --df-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.075);
+  --df-shadow-md: 0 8px 16px rgba(0, 0, 0, 0.15);
+  --df-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.175);
+
+  --df-font-display: 'Sansation', sans-serif;
+  --df-font-body: 'Sansation', sans-serif;
+
+  --df-color-auth-page-bg: rgb(var(--v-theme-overlay));
+  --df-color-auth-title: rgb(var(--v-theme-on-surface));
+  --df-color-auth-description: rgb(var(--v-theme-on-surface));
+  --df-gradient-auth-overlay: linear-gradient(90deg, rgba(var(--v-theme-primary), 0.6), rgba(var(--v-theme-overlay), 0.7));
+
+  --df-gradient-brand-primary-secondary: linear-gradient(90deg, #5200FF 0%, #BD00FF 100%);
+
+  --df-app-rail-width: 60px;
+  --df-sidebar-rail-padding-left: 0px;
+  --df-sidebar-icon-size: 20px;
+  --df-sidebar-icon-label-gap: 8px;
+  --df-chat-sidebar-width: 240px;
+  --df-chat-sidebar-collapsed-width: 52px;
+  --df-shadow-chat-composer: 0 2px 6px rgba(0, 0, 0, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  --df-shadow-chat-composer-focus: 0 8px 18px rgba(82, 0, 255, 0.16), inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.text-display-h1 {
+  font-family: var(--df-font-display);
+  font-size: 2.5rem;
+  line-height: 3rem;
+  font-weight: 700;
+}
+
+.text-display-h2 {
+  font-family: var(--df-font-display);
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+}
+
+.text-display-h3 {
+  font-family: var(--df-font-display);
+  font-size: 1.8rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+}
+
+.text-display-h4 {
+  font-family: var(--df-font-display);
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+}
+
+.text-body-large {
+  font-family: var(--df-font-body);
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 400;
+}
+
+.text-body-base {
+  font-family: var(--df-font-body);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+}
+
+.text-body-small {
+  font-family: var(--df-font-body);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+}
+
+.text-body-caption {
+  font-family: var(--df-font-body);
+  font-size: 0.8rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+}
+
+.text-body-large-bold {
+  font-family: var(--df-font-body);
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
+.text-body-base-bold {
+  font-family: var(--df-font-body);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.text-body-small-bold {
+  font-family: var(--df-font-body);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+}
+
+.text-label-large {
+  font-family: var(--df-font-display);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.text-label-base {
+  font-family: var(--df-font-display);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+}
+
+.text-label-small {
+  font-family: var(--df-font-display);
+  font-size: 0.8rem;
+  line-height: 1.125rem;
+  font-weight: 700;
+}
