@@ -1,7 +1,12 @@
 name: Code-Version-Tag
 
 on:
-  workflow_call:
+  workflow_run:
+    workflows: ["CD-Deploy-Production"]
+    types:
+      - completed
+    branches:
+      - 'main'
 
 jobs:
   tag:
