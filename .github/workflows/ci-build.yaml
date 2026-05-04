@@ -1,7 +1,12 @@
-name: build docker image
+name: CI-Build
 
 on:
-  workflow_call:
+  workflow_run:
+    workflows: ["CI-Orchestrator"]
+    types:
+      - completed
+    branches:
+      - 'release/**'
     secrets:
       DOCKERHUB_USERNAME:
         required: true
@@ -10,6 +15,7 @@ on:
 
 jobs:
   docker-lint:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: self-hosted
     steps:
       - name: checkout repo
@@ -21,6 +27,7 @@ jobs:
           dockerfile: Dockerfile
 
   docker-build-publish:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: self-hosted
     needs: docker-lint
     steps:
