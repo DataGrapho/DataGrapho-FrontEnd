@@ -14,11 +14,6 @@ export type ResetPasswordPayload = {
 }
 
 export type LoginResponse = {
-  accessToken?: string
-  refreshToken?: string
-  user?: {
-    id: string
-    name?: string
-    email?: string
-  }
+  access: string
+  refresh: string
 }
