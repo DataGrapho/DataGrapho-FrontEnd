@@ -104,4 +104,20 @@
     line-height: 20px;
     letter-spacing: 0;
   }
+
+  .input :deep(.v-input__details) {
+    padding-inline: 0;
+  }
+
+  .input :deep(.v-messages__message) {
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    text-align: left;
+  }
+
+  .input :deep(.v-input--error .v-messages__message) {
+    color: rgb(var(--v-theme-error));
+  }
 </style>

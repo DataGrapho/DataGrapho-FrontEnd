@@ -65,7 +65,7 @@
   import { useRoute } from 'vue-router'
   import AppSidebarActionButton from './AppSidebarActionButton.vue'
   import AppSidebarNavLink from './AppSidebarNavLink.vue'
-  import { useAppTheme } from '@/composables/useAppTheme'
+  import { useAppTheme } from '@/shared/composables/useAppTheme'
 
   const XRiLogoutBoxRLine = defineComponent({
     name: 'XRiLogoutBoxRLine',
