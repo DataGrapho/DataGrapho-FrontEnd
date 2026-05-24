@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/shared/config/api'
+import { ApiError, requestJson } from '@/shared/services/http'
 import type {
   LoginPayload,
   LoginResponse,
@@ -6,63 +6,69 @@ import type {
   ResetPasswordPayload,
 } from '@/features/auth/types/auth.types'
 
-// TODO: Trocar AUTH_ENDPOINTS com as rotas reais de autenticação do backend.
+type BackendLoginResponse = {
+  access: string
+  refresh: string
+  usuario: {
+    id_usuario: number
+    nome?: string
+    email: string
+    is_active?: boolean
+  }
+  acessos?: Array<{
+    id: number
+    ativo: boolean
+  }>
+}
+
+export class AuthRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly details?: unknown,
+  ) {
+    super(message)
+    this.name = 'AuthRequestError'
+  }
+}
 
 const AUTH_ENDPOINTS = {
-  login: '/api/auth/login/',
-  requestPasswordReset: '/api/auth/password/forgot/',
-  resetPassword: '/api/auth/password/reset/',
+  login: '/auth/login/',
+  requestPasswordReset: '/auth/password/forgot/',
+  resetPassword: '/auth/password/reset/',
 } as const
 
 async function post<TResponse>(endpoint: string, payload: Record<string, unknown>) {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  })
+  try {
+    return await requestJson<TResponse>(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw new AuthRequestError(
+        `Auth request failed with status ${error.status}`,
+        error.status,
+        error.details,
+      )
+    }
 
-  if (!response.ok) {
-    throw new Error(`Auth request failed with status ${response.status}`)
+    throw error
   }
-
-  if (response.status === 204) {
-    return undefined as TResponse
-  }
-
-  return await response.json() as TResponse
 }
 
 export async function login(payload: LoginPayload) {
-  const response = await post<LoginResponse>(AUTH_ENDPOINTS.login, payload)
-  
-  if (response) {
-    localStorage.setItem('auth', JSON.stringify(response))
-  }
-  
-  return response
-}
+  const response = await post<BackendLoginResponse>(AUTH_ENDPOINTS.login, payload)
 
-export function logout() {
-  localStorage.removeItem('auth')
-}
-
-export function isAuthenticated(): boolean {
-  const authData = localStorage.getItem('auth')
-  return !!authData
-}
-
-export function getAuthToken(): string | null {
-  const authData = localStorage.getItem('auth')
-  if (!authData) return null
-  
-  try {
-    const parsed = JSON.parse(authData)
-    return parsed.access || null
-  } catch {
-    return null
-  }
+  return {
+    access: response.access,
+    refresh: response.refresh,
+    usuario: response.usuario,
+    acessos: response.acessos,
+  } satisfies LoginResponse
 }
 
 export async function requestPasswordReset(payload: RequestPasswordResetPayload) {
