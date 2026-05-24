@@ -13,7 +13,15 @@
       :class="`chat-message--${message.role}`"
     >
       <div class="chat-message__bubble text-body-small">
-        <p>{{ message.content }}</p>
+        <ChatLoadingDots v-if="message.role === 'assistant' && message.status === 'typing' && !message.content" />
+        <p v-else>{{ message.content }}</p>
+      </div>
+
+      <div 
+        v-if="!(message.role === 'assistant' && message.status === 'typing')"
+        class="chat-message__timestamp text-caption"
+      >
+        {{ formatTime(message.createdAt) }}
       </div>
 
       <div
@@ -32,11 +40,20 @@
 
 <script setup lang="ts">
   import ChatActionIconButton from '@/features/chat/components/chat/ChatActionIconButton.vue'
+  import ChatLoadingDots from '@/features/chat/components/chat/ChatLoadingDots.vue'
   import type { ChatMessage } from '@/features/chat/types/chat.types'
 
   defineProps<{
     messages: ChatMessage[]
   }>()
+
+  function formatTime(date: Date): string {
+    return new Intl.DateTimeFormat('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }).format(date)
+  }
 
 </script>
 
@@ -71,6 +88,12 @@
   .chat-message__bubble p {
     margin: 0;
     white-space: pre-wrap;
+  }
+
+  .chat-message__timestamp {
+    font-size: 0.75rem;
+    color: rgb(var(--v-theme-on-surface-variant));
+    opacity: 0.7;
   }
 
   .chat-message--user .chat-message__bubble {
