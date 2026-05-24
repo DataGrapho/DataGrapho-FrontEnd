@@ -46,8 +46,8 @@
   import AppSidebar from '@/shared/components/app-sidebar/AppSidebar.vue'
   import ActionMenu, { type ActionMenuItem } from '@/shared/components/action-menu/ActionMenu.vue'
   import ChatSidebar from '@/features/chat/components/sidebar/ChatSidebar.vue'
-  import { useAppTheme } from '@/composables/useAppTheme'
-  import { logout } from '@/features/auth/services/auth.service'
+  import { useAppTheme } from '@/shared/composables/useAppTheme'
+  import { clearAuthenticatedSession } from '@/features/auth/services/auth-session.service'
 
   const props = withDefaults(
     defineProps<{
@@ -98,8 +98,8 @@
   }
 
   function handleLogout() {
-    logout()
-    router.push('/login')
+    clearAuthenticatedSession()
+    router.push({ name: 'login' })
   }
 
   onMounted(() => {
