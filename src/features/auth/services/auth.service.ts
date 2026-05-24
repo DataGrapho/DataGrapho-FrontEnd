@@ -35,7 +35,34 @@ async function post<TResponse>(endpoint: string, payload: Record<string, unknown
 }
 
 export async function login(payload: LoginPayload) {
-  return await post<LoginResponse>(AUTH_ENDPOINTS.login, payload)
+  const response = await post<LoginResponse>(AUTH_ENDPOINTS.login, payload)
+  
+  if (response) {
+    localStorage.setItem('auth', JSON.stringify(response))
+  }
+  
+  return response
+}
+
+export function logout() {
+  localStorage.removeItem('auth')
+}
+
+export function isAuthenticated(): boolean {
+  const authData = localStorage.getItem('auth')
+  return !!authData
+}
+
+export function getAuthToken(): string | null {
+  const authData = localStorage.getItem('auth')
+  if (!authData) return null
+  
+  try {
+    const parsed = JSON.parse(authData)
+    return parsed.access || null
+  } catch {
+    return null
+  }
 }
 
 export async function requestPasswordReset(payload: RequestPasswordResetPayload) {

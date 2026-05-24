@@ -9,6 +9,7 @@
           <AppSidebar
             :maximized="siteSidebarMaximized"
             @toggle="toggleSiteSidebar"
+            @logout="handleLogout"
           />
         </slot>
       </aside>
@@ -41,11 +42,12 @@
 
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue'
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import AppSidebar from '@/shared/components/app-sidebar/AppSidebar.vue'
   import ActionMenu, { type ActionMenuItem } from '@/shared/components/action-menu/ActionMenu.vue'
   import ChatSidebar from '@/features/chat/components/sidebar/ChatSidebar.vue'
   import { useAppTheme } from '@/composables/useAppTheme'
+  import { logout } from '@/features/auth/services/auth.service'
 
   const props = withDefaults(
     defineProps<{
@@ -66,6 +68,7 @@
     { label: 'Excluir', value: 'delete', icon: 'mdi-delete-outline' },
   ]
   const route = useRoute()
+  const router = useRouter()
   const pageTitle = computed(() => typeof route.meta.title === 'string' ? route.meta.title : 'DataGrapho AI')
   const showTopbar = computed(() => route.meta.hideTopbar !== true)
   const shouldShowChatSidebar = computed(() => route.name === 'app-chat' && props.showChatSidebar)
@@ -92,6 +95,11 @@
 
   function toggleChatSidebar () {
     chatSidebarCollapsed.value = !chatSidebarCollapsed.value
+  }
+
+  function handleLogout() {
+    logout()
+    router.push('/login')
   }
 
   onMounted(() => {
