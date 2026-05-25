@@ -1,13 +1,7 @@
-/**
- * router/index.ts
- *
- * Application routes with layout support
- */
-
 import { createRouter, createWebHistory } from 'vue-router'
-import AuthLayout from '../layouts/AuthLayout.vue'
-import DefaultLayout from '../layouts/DefaultLayout.vue'
-import { isAuthenticated } from '@/features/auth/services/auth.service'
+import AuthLayout from '@/core/layouts/AuthLayout.vue'
+import DefaultLayout from '@/core/layouts/DefaultLayout.vue'
+import { isSessionAuthenticated } from '@/features/auth/services/auth-session.service'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,43 +13,51 @@ const router = createRouter({
     {
       path: '/login',
       component: AuthLayout,
+      meta: {
+        guestOnly: true,
+      },
       children: [
         {
           path: '',
           name: 'login',
           component: () => import('@/features/auth/pages/LoginPage.vue'),
-          meta: { requiresGuest: true },
         },
       ],
     },
     {
       path: '/forgot-password',
       component: AuthLayout,
+      meta: {
+        guestOnly: true,
+      },
       children: [
         {
           path: '',
           name: 'forgot-password',
           component: () => import('@/features/auth/pages/ForgotPasswordPage.vue'),
-          meta: { requiresGuest: true },
         },
       ],
     },
     {
       path: '/reset-password',
       component: AuthLayout,
+      meta: {
+        guestOnly: true,
+      },
       children: [
         {
           path: '',
           name: 'reset-password',
           component: () => import('@/features/auth/pages/ResetPasswordPage.vue'),
-          meta: { requiresGuest: true },
         },
       ],
     },
     {
       path: '/app',
       component: DefaultLayout,
-      meta: { requiresAuth: true },
+      meta: {
+        requiresAuth: true,
+      },
       props: route => ({
         showChatSidebar: route.meta.showChatSidebar === true,
       }),
@@ -64,7 +66,6 @@ const router = createRouter({
           path: '',
           name: 'app-chat',
           meta: {
-            requiresAuth: true,
             showChatSidebar: true,
             title: 'DataGrapho AI',
           },
@@ -74,7 +75,6 @@ const router = createRouter({
           path: 'datatable',
           name: 'app-datatable',
           meta: {
-            requiresAuth: true,
             hideTopbar: true,
             title: 'Datatable',
           },
@@ -85,20 +85,25 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
-  const authenticated = isAuthenticated()
-  
-  if (to.meta.requiresGuest && authenticated) {
-    next({ name: 'app-chat' })
-    return
+router.beforeEach((to) => {
+  const isAuthenticated = isSessionAuthenticated()
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return {
+      name: 'login',
+      query: {
+        redirect: to.fullPath,
+      },
+    }
   }
-  
-  if (to.meta.requiresAuth && !authenticated) {
-    next({ name: 'login' })
-    return
+
+  if (to.meta.guestOnly && isAuthenticated) {
+    return {
+      name: 'app-chat',
+    }
   }
-  
-  next()
+
+  return true
 })
 
 export default router
