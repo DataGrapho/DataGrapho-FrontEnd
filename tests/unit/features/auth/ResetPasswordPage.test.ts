@@ -47,7 +47,7 @@ vi.mock('@/features/auth/services/auth-feedback.service', () => ({
   getPasswordResetErrorMessage: getPasswordResetErrorMessageMock,
 }))
 
-describe('ResetPasswordPage', () => {
+describe('pagina de redefinicao de senha', () => {
   beforeEach(() => {
     resetPasswordMock.mockReset()
     clearAuthenticatedSessionMock.mockReset()

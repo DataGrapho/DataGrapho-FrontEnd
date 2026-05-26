@@ -28,7 +28,7 @@ vi.mock('@/features/auth/services/auth-feedback.service', () => ({
   getPasswordResetRequestMessage: getPasswordResetRequestMessageMock,
 }))
 
-describe('ForgotPasswordPage', () => {
+describe('pagina de esqueci minha senha', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     requestPasswordResetMock.mockReset()
