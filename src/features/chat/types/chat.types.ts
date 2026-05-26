@@ -4,12 +4,35 @@ export type ChatRole = 'user' | 'assistant'
 
 export type ChatResponseStatus = 'complete' | 'typing' | 'error'
 
+export type ChatViewport = 'mobile' | 'tablet' | 'desktop'
+export type ChatStatus = 'active' | 'archived'
+export type MessageState = 'sent' | 'processing' | 'completed' | 'failed'
+
+export interface ChatSummary {
+  id: string
+  title: string
+  createdAt: string
+  updatedAt: string
+  lastMessagePreview: string
+  totalMessages: number
+  status: ChatStatus
+}
+
+export interface ChatSessionState {
+  activeChatId: string | null
+  visibleHistory: ChatMessage[]
+  searchTerm: string
+  viewport: ChatViewport
+}
+
 export interface ChatMessage {
   id: string
   role: ChatRole
   content: string
   status: ChatResponseStatus
+  state?: MessageState
   createdAt: Date
+  chatId?: string
   toolsUsed?: string[]
 }
 

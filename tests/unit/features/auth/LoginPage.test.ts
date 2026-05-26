@@ -44,7 +44,7 @@ vi.mock('@/features/auth/services/auth-feedback.service', () => ({
   getLoginErrorMessage: getLoginErrorMessageMock,
 }))
 
-describe('LoginPage', () => {
+describe('pagina de login', () => {
   beforeEach(() => {
     loginMock.mockReset()
     mockRouter.push.mockReset()

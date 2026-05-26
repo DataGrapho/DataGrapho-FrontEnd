@@ -8,16 +8,18 @@
 
       <input
         :value="modelValue"
+        :disabled="disabled"
         class="chat-composer__input text-body-small"
         placeholder="Me pergunte qualquer coisa..."
         type="text"
         @focus="emit('focus')"
+        @keydown.enter.prevent="emit('submit')"
         @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       >
 
       <button
         class="chat-composer__submit"
-        :disabled="disabled"
+        :disabled="submitDisabled"
         type="submit"
         aria-label="Enviar mensagem"
       >
@@ -35,6 +37,7 @@
   defineProps<{
     disabled: boolean
     modelValue: string
+    submitDisabled: boolean
   }>()
 
   const emit = defineEmits<{

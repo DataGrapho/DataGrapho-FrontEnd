@@ -1,11 +1,7 @@
 <template>
-  <button
-    class="chat-sidebar__recent-item"
-    :class="{ 'chat-sidebar__recent-item--active': active }"
-    type="button"
-  >
+  <button class="chat-sidebar__recent-item" :class="{ 'chat-sidebar__recent-item--active': active }" type="button" @click="$emit('select')">
     <span class="chat-sidebar__recent-item-text">{{ label }}</span>
-    <ActionMenu :items="recentActions" title="Acoes do chat">
+    <ActionMenu :items="recentActions" title="Acoes do chat" @select="handleAction">
       <template #activator="{ props: menuProps }">
         <button
           class="chat-sidebar__recent-item-menu"
@@ -28,11 +24,21 @@
     label: string
     active?: boolean
   }>()
+  const emit = defineEmits<{
+    select: []
+    rename: []
+    delete: []
+  }>()
 
   const recentActions: ActionMenuItem[] = [
     { label: 'Renomear', value: 'rename', icon: 'mdi-pencil-outline' },
     { label: 'Excluir', value: 'delete', icon: 'mdi-delete-outline' },
   ]
+
+  function handleAction(action: string) {
+    if (action === 'rename') emit('rename')
+    if (action === 'delete') emit('delete')
+  }
 </script>
 
 <style scoped>
@@ -87,12 +93,20 @@
 
   .chat-sidebar__recent-item-text {
     flex: 1;
-    font-size: 14px;
-    font-family: 'Sansation', sans-serif;
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
     color: rgb(var(--v-theme-on-surface));
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0;
+  }
+
+  @media (max-width: 900px) {
+    .chat-sidebar__recent-item-menu {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 </style>

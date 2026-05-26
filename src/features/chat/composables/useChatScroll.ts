@@ -32,12 +32,12 @@ export function useChatScroll (scrollElement: Ref<HTMLElement | null>) {
     const elapsed = Math.max(now - previousTime, 1)
 
     distanceFromTop.value = nextTop
-    distanceFromBottom.value = element.scrollHeight - element.clientHeight - nextTop
+    distanceFromBottom.value = Math.max(element.scrollHeight - element.clientHeight - nextTop, 0)
     isAtBottom.value = distanceFromBottom.value <= BOTTOM_THRESHOLD
     scrollDirection.value = delta > 1 ? 'down' : delta < -1 ? 'up' : 'idle'
     scrollVelocity.value = Math.abs(delta / elapsed)
 
-    if (scrollDirection.value === 'up' && !isAtBottom.value) {
+    if (scrollDirection.value === 'up' && distanceFromTop.value > 24 && !isAtBottom.value) {
       isExploring.value = true
     }
 
@@ -55,9 +55,10 @@ export function useChatScroll (scrollElement: Ref<HTMLElement | null>) {
     if (!element || (!force && !shouldAutoScroll.value)) return
 
     await nextTick()
+    const targetTop = Math.max(element.scrollHeight - element.clientHeight, 0)
 
     element.scrollTo({
-      top: element.scrollHeight,
+      top: targetTop,
       behavior: options.behavior ?? 'smooth',
     })
   }

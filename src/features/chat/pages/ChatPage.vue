@@ -24,7 +24,8 @@
 
     <ChatComposer
       v-model="draft"
-      :disabled="!canSend"
+      :disabled="isResponding"
+      :submit-disabled="!canSend"
       @focus="handleComposerFocus"
       @submit="sendMessage"
     />
@@ -32,9 +33,9 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, nextTick, ref } from 'vue'
-  import ChatComposer from '@/features/chat/components/ChatComposer.vue'
-  import ChatMessageList from '@/features/chat/components/chat/ChatMessageList.vue'
+  import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+  import ChatComposer from '@/features/chat/components/conversation/ChatComposer.vue'
+  import ChatMessageList from '@/features/chat/components/conversation/ChatMessageList.vue'
   import { useChatMessages } from '@/features/chat/composables/useChatMessages'
   import { useChatScroll } from '@/features/chat/composables/useChatScroll'
   import type { ChatInterfaceState } from '@/features/chat/types/chat.types'
@@ -42,7 +43,7 @@
   const draft = ref('')
   const inputFocused = ref(false)
   const scrollContainer = ref<HTMLElement | null>(null)
-  const { messages, isResponding, sendUserMessage } = useChatMessages()
+  const { activeChatId, messages, isResponding, refreshChats, sendUserMessage, setActiveChat, setViewport, syncSessionState } = useChatMessages()
 
   const { isExploring, resetScrollIntent, scrollMessageToTop, updateMetrics: updateScrollMetrics } = useChatScroll(scrollContainer)
 
@@ -59,6 +60,14 @@
     inputFocused.value = true
   }
 
+  function syncViewportFromWindow () {
+    const width = window.innerWidth
+    if (width < 640) setViewport('mobile')
+    else if (width < 1024) setViewport('tablet')
+    else setViewport('desktop')
+    syncSessionState()
+  }
+
   async function sendMessage () {
     const content = draft.value.trim()
 
@@ -72,7 +81,21 @@
     window.requestAnimationFrame(() => {
       void scrollMessageToTop(userMessageId, { behavior: 'auto' })
     })
+    syncSessionState()
   }
+
+  onMounted(() => {
+    syncViewportFromWindow()
+    window.addEventListener('resize', syncViewportFromWindow)
+    void refreshChats()
+    if (!activeChatId.value) {
+      setActiveChat(null)
+    }
+  })
+
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', syncViewportFromWindow)
+  })
 </script>
 
 <style scoped>
@@ -162,9 +185,11 @@
   @media (max-width: 900px) {
     .chat-page {
       --chat-content-width: 100%;
+      min-height: calc(100dvh - 132px);
     }
 
     .chat-page__scroll {
+      min-height: calc(100dvh - 132px);
       padding-right: var(--df-space-md);
       padding-left: var(--df-space-md);
     }
@@ -173,5 +198,16 @@
       font-size: 1.5rem;
       line-height: 2rem;
     }
+
+    .chat-page {
+      --chat-bottom-padding: 220px;
+    }
+
+    .chat-page--initial :deep(.chat-page__composer-wrap) {
+      top: 56%;
+      bottom: auto;
+      transform: translate(-50%, -50%);
+    }
   }
 </style>
+

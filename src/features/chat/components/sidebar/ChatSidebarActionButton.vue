@@ -55,10 +55,11 @@
   .chat-sidebar__label {
     flex: 1;
     white-space: nowrap;
-    font-size: 16px;
-    font-family: 'Sansation', sans-serif;
-    font-weight: 400;
-    line-height: 24px;
+    font-family: var(--df-font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    letter-spacing: 0;
     color: rgb(var(--v-theme-on-surface));
     opacity: 1;
     transition: opacity 120ms ease;

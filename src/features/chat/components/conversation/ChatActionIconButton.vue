@@ -2,6 +2,7 @@
   <v-btn
     class="chat-icon-button"
     density="compact"
+    :disabled="disabled"
     icon
     variant="text"
     :aria-label="label"
@@ -17,8 +18,10 @@
       label: string
       icon: string
       size?: number
+      disabled?: boolean
     }>(),
     {
+      disabled: false,
       size: 16,
     },
   )
