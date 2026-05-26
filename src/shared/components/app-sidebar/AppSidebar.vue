@@ -41,6 +41,25 @@
       />
     </nav>
 
+    <nav class="app-sidebar__bottom-nav">
+      <RouterLink
+        class="app-sidebar__bottom-link"
+        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-chat' }"
+        to="/app"
+      >
+        <Icon name="chat-ai-4-line" />
+        <span>Chatbot IA</span>
+      </RouterLink>
+      <RouterLink
+        class="app-sidebar__bottom-link"
+        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-datatable' }"
+        to="/app/datatable"
+      >
+        <Icon name="table-view" />
+        <span>Datatable</span>
+      </RouterLink>
+    </nav>
+
     <div class="app-sidebar__footer">
       <AppSidebarActionButton
         :icon="isDarkTheme ? 'sun-line' : 'moon-line'"
@@ -195,6 +214,10 @@
     gap: 8px;
   }
 
+  .app-sidebar__bottom-nav {
+    display: none;
+  }
+
   .app-sidebar--collapsed :deep(.app-sidebar-item__label),
   .app-sidebar--collapsed :deep(.app-sidebar-action__label) {
     width: 0;
@@ -202,5 +225,52 @@
     opacity: 0;
     pointer-events: none;
     overflow: hidden;
+  }
+
+  @media (max-width: 900px) {
+    .app-sidebar {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 60;
+      height: auto;
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+      border-top: 1px solid rgb(var(--v-theme-grey-lighten-3));
+      border-right: 0;
+    }
+
+    .app-sidebar__head,
+    .app-sidebar__nav,
+    .app-sidebar__footer {
+      display: none;
+    }
+
+    .app-sidebar__bottom-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .app-sidebar__bottom-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px;
+      border-radius: 8px;
+      color: rgb(var(--v-theme-on-surface));
+      text-decoration: none;
+      font-family: var(--df-font-body);
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      letter-spacing: 0;
+      background: rgb(var(--v-theme-surface-variant));
+    }
+
+    .app-sidebar__bottom-link--active {
+      background: rgba(var(--v-theme-primary), 0.16);
+      color: rgb(var(--v-theme-primary));
+    }
   }
 </style>
