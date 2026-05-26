@@ -13,19 +13,19 @@
       :class="`chat-message--${message.role}`"
     >
       <div class="chat-message__bubble text-body-small">
-        <ChatLoadingDots v-if="message.role === 'assistant' && message.status === 'typing' && !message.content" />
+        <ChatLoadingDots v-if="message.state === 'processing' && !message.content" />
         <p v-else>{{ message.content }}</p>
       </div>
 
-      <div 
-        v-if="!(message.role === 'assistant' && message.status === 'typing')"
-        class="chat-message__timestamp text-caption"
+      <p
+        v-if="message.state === 'failed'"
+        class="chat-message__error text-caption"
       >
-        {{ formatTime(message.createdAt) }}
-      </div>
+        Falha ao processar resposta.
+      </p>
 
       <div
-        v-if="message.role === 'assistant' && message.status === 'complete'"
+        v-if="message.role === 'assistant' && message.state === 'completed'"
         class="chat-message__actions"
         aria-label="Acoes da resposta"
       >
@@ -39,21 +39,13 @@
 </template>
 
 <script setup lang="ts">
-  import ChatActionIconButton from '@/features/chat/components/chat/ChatActionIconButton.vue'
-  import ChatLoadingDots from '@/features/chat/components/chat/ChatLoadingDots.vue'
+  import ChatActionIconButton from '@/features/chat/components/conversation/ChatActionIconButton.vue'
+  import ChatLoadingDots from '@/features/chat/components/conversation/ChatLoadingDots.vue'
   import type { ChatMessage } from '@/features/chat/types/chat.types'
 
   defineProps<{
     messages: ChatMessage[]
   }>()
-
-  function formatTime(date: Date): string {
-    return new Intl.DateTimeFormat('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    }).format(date)
-  }
 
 </script>
 
@@ -90,12 +82,6 @@
     white-space: pre-wrap;
   }
 
-  .chat-message__timestamp {
-    font-size: 0.75rem;
-    color: rgb(var(--v-theme-on-surface-variant));
-    opacity: 0.7;
-  }
-
   .chat-message--user .chat-message__bubble {
     max-width: 70%;
     padding: var(--df-space-sm);
@@ -107,6 +93,11 @@
     display: flex;
     align-items: center;
     gap: 8px;
+  }
+
+  .chat-message__error {
+    margin: 0;
+    color: rgb(var(--v-theme-error));
   }
 
   .chat-message-enter-active,

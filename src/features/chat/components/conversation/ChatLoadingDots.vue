@@ -15,6 +15,8 @@
     align-items: center;
     gap: 6px;
     padding: 12px 16px;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .chat-loading-dots__dot {
