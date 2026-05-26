@@ -178,10 +178,14 @@
     min-height: 0;
     height: 100%;
     flex: 1;
+    width: 100%;
+    max-width: 1680px;
+    margin: 0 auto;
     flex-direction: column;
     gap: 16px;
     padding: 24px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     box-sizing: border-box;
   }
 
@@ -267,6 +271,7 @@
   @media (max-width: 900px) {
     .datatable-page {
       padding: 12px;
+      padding-bottom: 96px;
     }
 
     .datatable-page__header {

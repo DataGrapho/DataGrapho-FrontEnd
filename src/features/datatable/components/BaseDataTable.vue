@@ -305,7 +305,9 @@
   .base-datatable__scroll {
     min-height: 0;
     flex: 1;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   .base-datatable__table {
@@ -316,6 +318,8 @@
 
   .base-datatable__table :deep(.v-table__wrapper) {
     min-height: 0;
+    overflow-x: auto;
+    overflow-y: auto;
   }
 
   .base-datatable__table :deep(th) {
