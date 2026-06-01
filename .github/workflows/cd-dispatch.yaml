@@ -1,12 +1,12 @@
-name: CD-Deploy-Production
+name: CD-Dispatch
 
 on:
-  workflow_run:
-    workflows: ["CI-Build"]
-    types:
-      - completed
-    branches:
-      - 'main'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch a ser deployada"
+        required: true
+        default: "main"
     secrets:
       SSH_HOST:
         required: true
@@ -23,10 +23,9 @@ concurrency:
 
 jobs:
   deploy-fe:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: self-hosted
     steps:
-      - name: ssh deploy
+      - name: manual ssh deploy
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -34,6 +33,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            export HOST_PORT=3000
-            export CONTAINER_PORT=3000
-            ~/deploy/deploy.sh datagrapho-fe
+            ~/deploy/manual.sh datagrapho-fe ${{ github.event.inputs.branch }}
