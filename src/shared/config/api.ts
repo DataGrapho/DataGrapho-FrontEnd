@@ -1,5 +1,5 @@
-const DEFAULT_PROD_API_BASE_URL = 'https://api.example.com'
-const DEFAULT_LOCAL_API_BASE_URL = 'http://localhost:8000'
+const DEFAULT_PROD_API_BASE_URL = 'https://pendengas.com.br/api'
+const DEFAULT_LOCAL_API_BASE_URL = 'https://pendengas.com.br/api'
 
 function normalizeBaseUrl(baseUrl: string) {
   return baseUrl.trim().replace(/\/+$/, '')
