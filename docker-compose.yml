@@ -2,12 +2,12 @@ version: '3.8'
 
 services:
   front:
-    build:
-      context: .
-      args:
-        # API acessível via https://pendengas.com.br/api
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-https://pendengas.com.br/api}
+    build: .
     container_name: datagrapho_frontend
     ports:
-      - "3000:80"
-    restart: unless-stopped
+      - "4173:3000"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    volumes:
+      - .:/app
+      - /app/node_modules
