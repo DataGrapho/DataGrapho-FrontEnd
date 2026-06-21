@@ -5,9 +5,7 @@ services:
     build: .
     container_name: datagrapho_frontend
     ports:
-      - "4173:3000"
+      - "3000:80"
     environment:
-      - VITE_API_BASE_URL=http://localhost:8000
-    volumes:
-      - .:/app
-      - /app/node_modules
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:8000}
+    restart: unless-stopped
