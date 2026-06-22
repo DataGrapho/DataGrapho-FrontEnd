@@ -146,7 +146,7 @@
   }
 
   function handleRenameChat() {
-    // Placeholder intentionally minimal: rename flow is handled in chat page action flow.
+    
   }
 
   function handleDeleteChat(chatId: string) {
@@ -164,9 +164,6 @@
     syncViewportState()
     initTheme()
     window.addEventListener('resize', syncViewportState)
-    if (route.name === 'app-chat') {
-      void refreshChats()
-    }
   })
 
   onBeforeUnmount(() => {
@@ -259,8 +256,10 @@
   }
 
   @media (max-width: 900px) {
-    .app-main {
-      min-height: calc(100dvh - 72px);
+    .app-shell--mobile .app-main {
+      height: calc(100dvh - 72px);
+      max-height: calc(100dvh - 72px);
+      overflow: hidden;
     }
 
     .app-main__topbar {
@@ -294,6 +293,10 @@
       text-align: center;
     }
 
-    .app-main__content { overflow: hidden; }
+    .app-main__content {
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
   }
 </style>
