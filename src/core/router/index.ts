@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AuthLayout from '@/core/layouts/AuthLayout.vue'
 import DefaultLayout from '@/core/layouts/DefaultLayout.vue'
-import { isSessionAuthenticated } from '@/features/auth/services/auth-session.service'
+import {
+  getAuthenticatedSession,
+  isSessionAuthenticated,
+} from '@/features/auth/services/auth-session.service'
+import { ensureValidAccessToken } from '@/features/auth/services/auth-token-refresh.service'
+import { hasAdministrativeAccess } from '@/features/admin-users/services/admin-user-permissions.service'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,24 +85,53 @@ const router = createRouter({
           },
           component: () => import('@/features/datatable/pages/DeparaDatatablePage.vue'),
         },
+        {
+          path: 'admin-users',
+          name: 'app-admin-users',
+          meta: {
+            requiresAdminPermission: true,
+            hideTopbar: true,
+            title: 'Administração',
+          },
+          component: () => import('@/features/admin-users/pages/AdminUsersPage.vue'),
+        },
       ],
     },
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const isAuthenticated = isSessionAuthenticated()
+  const session = getAuthenticatedSession()
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    return {
-      name: 'login',
-      query: {
-        redirect: to.fullPath,
-      },
+  if (to.meta.requiresAuth) {
+    if (!isAuthenticated) {
+      return {
+        name: 'login',
+        query: {
+          redirect: to.fullPath,
+        },
+      }
+    }
+
+    const accessToken = await ensureValidAccessToken()
+    if (!accessToken) {
+      return {
+        name: 'login',
+        query: {
+          redirect: to.fullPath,
+        },
+      }
     }
   }
 
   if (to.meta.guestOnly && isAuthenticated) {
+    return {
+      name: 'app-chat',
+    }
+  }
+
+  if (to.meta.requiresAdminPermission && !hasAdministrativeAccess(session)) {
     return {
       name: 'app-chat',
     }
