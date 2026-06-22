@@ -21,7 +21,10 @@
         :error-messages="validationErrors.password"
       />
 
-      <AuthAlertMessage v-if="errorMessage" :messages="errorMessage" />
+      <InlineMessage
+        v-if="errorMessage"
+        :messages="errorMessage"
+      />
 
       <Button class="text-body-base-bold" type="submit" size="lg" block :disabled="isSubmitting" :loading="isSubmitting">
         Entrar
@@ -37,7 +40,7 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
-  import AuthAlertMessage from '@/features/auth/components/AuthAlertMessage.vue'
+  import InlineMessage from '@/shared/components/inline-message/InlineMessage.vue'
   import AuthForm from '@/features/auth/components/AuthForm.vue'
   import AuthFormCard from '@/features/auth/components/AuthFormCard.vue'
   import { registerAuthAuditEvent } from '@/features/auth/services/auth-audit.service'
