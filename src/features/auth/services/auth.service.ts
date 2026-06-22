@@ -1,5 +1,6 @@
 import { ApiError, requestJson } from '@/shared/services/http'
 import type {
+  AuthUserAccess,
   LoginPayload,
   LoginResponse,
   RequestPasswordResetPayload,
@@ -14,11 +15,9 @@ type BackendLoginResponse = {
     nome?: string
     email: string
     is_active?: boolean
+    is_staff?: boolean
   }
-  acessos?: Array<{
-    id: number
-    ativo: boolean
-  }>
+  acessos?: AuthUserAccess[]
 }
 
 export class AuthRequestError extends Error {

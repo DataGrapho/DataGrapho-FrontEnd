@@ -1,4 +1,11 @@
-import { API_BASE_URL } from '@/shared/config/api'
+import {
+  redirectToLogin,
+  resolveAuthorizedHeaders,
+  retryRequestAfterUnauthorized,
+} from '@/features/auth/services/auth-token-refresh.service'
+import { buildApiUrl } from '@/shared/services/api-url'
+
+export { buildApiUrl } from '@/shared/services/api-url'
 
 type QueryValue = string | number | boolean | null | undefined
 
@@ -13,35 +20,50 @@ export class ApiError extends Error {
   }
 }
 
-export function buildApiUrl (path: string, query?: Record<string, QueryValue>) {
-  const baseUrl = API_BASE_URL.replace(/\/+$/, '')
-  const apiBaseUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  const url = new URL(`${apiBaseUrl}${normalizedPath}`)
+async function executeFetch(
+  path: string,
+  options: RequestInit & { query?: Record<string, QueryValue> } = {},
+) {
+  const { query, headers, ...requestOptions } = options
+  const authorizedHeaders = await resolveAuthorizedHeaders(headers)
 
-  Object.entries(query ?? {}).forEach(([key, value]) => {
-    if (value === null || value === undefined || value === '') return
-    url.searchParams.set(key, String(value))
+  return fetch(buildApiUrl(path, query), {
+    ...requestOptions,
+    headers: {
+      Accept: 'application/json',
+      ...Object.fromEntries(new Headers(authorizedHeaders).entries()),
+    },
   })
+}
 
-  return url.toString()
+async function parseResponse(response: Response) {
+  const contentType = response.headers.get('content-type') ?? ''
+  const body = contentType.includes('application/json') ? await response.json() : undefined
+  return body
 }
 
 export async function requestJson<TResponse> (
   path: string,
   options: RequestInit & { query?: Record<string, QueryValue> } = {},
 ) {
-  const { query, headers, ...requestOptions } = options
-  const response = await fetch(buildApiUrl(path, query), {
-    ...requestOptions,
-    headers: {
-      Accept: 'application/json',
-      ...headers,
-    },
-  })
+  let response = await executeFetch(path, options)
+  let body = await parseResponse(response)
 
-  const contentType = response.headers.get('content-type') ?? ''
-  const body = contentType.includes('application/json') ? await response.json() : undefined
+  if (response.status === 401) {
+    const retriedBody = await retryRequestAfterUnauthorized(path, options, async (retryPath, retryOptions) => {
+      const retryResponse = await executeFetch(retryPath, retryOptions)
+      if (!retryResponse.ok) return null
+
+      return parseResponse(retryResponse) as TResponse
+    })
+
+    if (retriedBody !== null) {
+      return retriedBody
+    }
+
+    redirectToLogin()
+    throw new ApiError(`Request failed with status ${response.status}`, response.status, body)
+  }
 
   if (!response.ok) {
     throw new ApiError(`Request failed with status ${response.status}`, response.status, body)

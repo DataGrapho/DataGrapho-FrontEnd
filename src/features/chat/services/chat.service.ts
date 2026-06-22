@@ -1,5 +1,5 @@
 import { API_BASE_URL } from '@/shared/config/api'
-import { getAuthenticatedSession } from '@/features/auth/services/auth-session.service'
+import { fetchWithBearerAuth } from '@/features/auth/services/auth-token-refresh.service'
 import {
   buildMockChatResponse,
   createMockChat,
@@ -18,20 +18,8 @@ const CHAT_ENDPOINTS = {
   sendMessage: '/api/chatbot/chat/',
 } as const
 
-function getAuthToken(): string | null {
-  const session = getAuthenticatedSession()
-  if (session?.accessToken) return session.accessToken
-
-  // Backward compatibility with older auth storage format.
-  const authData = localStorage.getItem('auth')
-  if (!authData) return null
-
-  try {
-    const parsed = JSON.parse(authData)
-    return parsed.access || null
-  } catch {
-    return null
-  }
+async function fetchWithAuth(endpoint: string, init: RequestInit): Promise<Response> {
+  return fetchWithBearerAuth(`${API_BASE_URL}${endpoint}`, init)
 }
 
 export async function sendMessage(payload: SendMessagePayload): Promise<ChatApiResponse> {
@@ -107,18 +95,6 @@ export async function listChatMessages(chatId: string): Promise<ChatApiResponse[
     if (!isChatNotFoundError(error)) throw error
     return listMockChatMessages(chatId)
   }
-}
-
-async function fetchWithAuth(endpoint: string, init: RequestInit): Promise<Response> {
-  const token = getAuthToken()
-  if (!token) throw new Error('Usuário não autenticado')
-  return fetch(`${API_BASE_URL}${endpoint}`, {
-    ...init,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(init.headers || {}),
-    },
-  })
 }
 
 async function parseJsonResponse<T>(response: Response): Promise<T> {
