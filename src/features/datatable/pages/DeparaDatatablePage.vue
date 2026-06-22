@@ -30,7 +30,6 @@
     </header>
 
     <BaseDataTable
-      v-model:filters="columnFilters"
       :columns="columns"
       :empty-text="emptyText"
       :error="errorMessage"
@@ -77,8 +76,8 @@
   import { listCatalogosDepara } from '@/features/datatable/services/catalogo-depara.service'
   import { listDepara } from '@/features/datatable/services/depara.service'
   import type { CatalogoDeparaListItem, DeparaListItem } from '@/features/datatable/types/depara.types'
-  import type { DataTableColumn, DataTableFilters } from '@/features/datatable/types/shared-table.types'
-  import { buildDeparaTableRows, filterDeparaRows } from '@/features/datatable/utils/depara-table'
+  import type { DataTableColumn } from '@/features/datatable/types/shared-table.types'
+  import { buildDeparaTableRows } from '@/features/datatable/utils/depara-table'
 
   const deparaItems = ref<DeparaListItem[]>([])
   const catalogos = ref<CatalogoDeparaListItem[]>([])
@@ -86,44 +85,34 @@
   const errorMessage = ref('')
   const isMockMode = ref(false)
   const globalSearch = ref('')
-  const columnFilters = ref<DataTableFilters>({})
 
   const tableRows = computed(() => buildDeparaTableRows(deparaItems.value))
-  const filteredRows = computed(() => filterDeparaRows(tableRows.value, columnFilters.value, globalSearch.value))
+  const filteredRows = computed(() => {
+    const search = globalSearch.value.trim().toLocaleLowerCase('pt-BR')
+    if (!search) return tableRows.value
+    return tableRows.value.filter(row =>
+      Object.values(row).some(val => {
+        if (val === null || val === undefined) return false
+        return String(val).toLocaleLowerCase('pt-BR').includes(search)
+      }),
+    )
+  })
   const emptyText = computed(() => tableRows.value.length > 0 ? 'Nenhuma linha corresponde aos filtros.' : 'Nenhuma linha encontrada.')
-  const catalogoOptions = computed(() => catalogos.value.map(catalogo => ({
-    label: `${catalogo.id_catalogo} - ${catalogo.tabela_origem}`,
-    value: catalogo.id_catalogo,
-  })))
 
   const columns = computed<DataTableColumn[]>(() => [
-    { key: 'id_depara', label: 'ID', width: '88px', filterable: true, filterType: 'number', filterPlaceholder: 'ID' },
-    {
-      key: 'id_catalogo',
-      label: 'Catalogo',
-      width: '180px',
-      filterable: true,
-      filterType: catalogoOptions.value.length > 0 ? 'select' : 'number',
-      filterOptions: catalogoOptions.value,
-      filterPlaceholder: 'Catalogo',
-    },
-    { key: 'catalogo_tabela', label: 'Tabela', minWidth: '160px', filterable: true, filterPlaceholder: 'Tabela' },
-    { key: 'codigo_origem', label: 'Codigo origem', minWidth: '150px', filterable: true, filterPlaceholder: 'Origem' },
-    { key: 'codigo_destino', label: 'Codigo destino', minWidth: '150px', filterable: true, filterPlaceholder: 'Destino' },
-    { key: 'relation_label', label: 'Linha pai repetida', minWidth: '230px', filterable: true, filterPlaceholder: 'Pai' },
-    { key: 'parent_catalogo_tabela', label: 'Tabela pai', minWidth: '150px', filterable: true, filterPlaceholder: 'Tabela pai' },
+    { key: 'id_depara', label: 'ID', width: '88px' },
+    { key: 'id_catalogo', label: 'Catalogo', width: '180px' },
+    { key: 'catalogo_tabela', label: 'Tabela', minWidth: '160px' },
+    { key: 'codigo_origem', label: 'Codigo origem', minWidth: '150px' },
+    { key: 'codigo_destino', label: 'Codigo destino', minWidth: '150px' },
+    { key: 'relation_label', label: 'Linha pai repetida', minWidth: '230px' },
+    { key: 'parent_catalogo_tabela', label: 'Tabela pai', minWidth: '150px' },
     {
       key: 'ativo',
       label: 'Status',
       width: '128px',
-      filterable: true,
-      filterType: 'select',
-      filterOptions: [
-        { label: 'Ativo', value: true },
-        { label: 'Inativo', value: false },
-      ],
     },
-    { key: 'criado_em', label: 'Criado em', width: '150px', filterable: true, filterPlaceholder: 'Data' },
+    { key: 'criado_em', label: 'Criado em', width: '150px' },
   ])
 
   async function loadData () {
@@ -171,34 +160,20 @@
   })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  @use '@/shared/styles/content-page' as content-page;
+
   .datatable-page {
-    display: flex;
-    min-width: 0;
-    min-height: 0;
-    height: 100%;
-    flex: 1;
-    width: 100%;
-    max-width: 1680px;
-    margin: 0 auto;
-    flex-direction: column;
-    gap: 16px;
-    padding: 24px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    box-sizing: border-box;
+    @include content-page.content-page-shell;
+    overflow: hidden;
   }
 
   .datatable-page__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+    @include content-page.content-page-header;
   }
 
   .datatable-page__title {
-    margin: 0;
-    color: rgb(var(--v-theme-on-surface));
+    @include content-page.content-page-title;
   }
 
   .datatable-page__mock-flag {
@@ -269,16 +244,6 @@
   }
 
   @media (max-width: 900px) {
-    .datatable-page {
-      padding: 12px;
-      padding-bottom: 96px;
-    }
-
-    .datatable-page__header {
-      align-items: stretch;
-      flex-direction: column;
-    }
-
     .datatable-page__actions {
       width: 100%;
     }

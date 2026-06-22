@@ -12,49 +12,23 @@
             >
               <div class="base-datatable__header-cell">
                 <button
+                  v-if="column.sortable !== false"
                   class="base-datatable__sort-button"
                   type="button"
                   :title="getSortTitle(column)"
                   @click="toggleSort(column.key)"
                 >
                   <span class="base-datatable__header-label">{{ column.label }}</span>
-                  <v-icon
+                  <span
                     class="base-datatable__sort-icon"
                     :class="{ 'base-datatable__sort-icon--active': sortState.key === column.key }"
-                    size="16"
                   >
-                    {{ getSortIcon(column.key) }}
-                  </v-icon>
+                    <Icon :name="getSortIcon(column.key)" />
+                  </span>
                 </button>
-
-                <template v-if="column.filterable">
-                  <v-select
-                    v-if="column.filterType === 'select'"
-                    :items="column.filterOptions ?? []"
-                    :model-value="filters[column.key] ?? null"
-                    class="base-datatable__filter"
-                    clearable
-                    density="compact"
-                    hide-details
-                    item-title="label"
-                    item-value="value"
-                    :menu-props="{ contentClass: 'base-datatable__select-menu' }"
-                    variant="outlined"
-                    @update:model-value="updateFilter(column.key, $event)"
-                  />
-                  <v-text-field
-                    v-else
-                    :model-value="filters[column.key] ?? ''"
-                    :placeholder="column.filterPlaceholder ?? 'Filtrar'"
-                    :type="column.filterType === 'number' ? 'number' : 'text'"
-                    class="base-datatable__filter"
-                    clearable
-                    density="compact"
-                    hide-details
-                    variant="outlined"
-                    @update:model-value="updateFilter(column.key, $event)"
-                  />
-                </template>
+                <span v-else class="base-datatable__header-label">
+                  {{ column.label }}
+                </span>
               </div>
             </th>
           </tr>
@@ -80,6 +54,8 @@
             v-for="row in paginatedRows"
             v-else
             :key="String(row[rowKey])"
+            class="base-datatable__row"
+            @click="handleRowClick(row)"
           >
             <td
               v-for="column in columns"
@@ -116,21 +92,25 @@
         />
         <v-btn
           :disabled="currentPage <= 1"
+          class="base-datatable__pagination-button"
           density="comfortable"
-          icon="mdi-chevron-left"
           variant="text"
           @click="currentPage -= 1"
-        />
+        >
+          <Icon name="arrow-left-s-line" />
+        </v-btn>
         <span class="base-datatable__page text-body-small">
           {{ currentPage }} / {{ pageCount }}
         </span>
         <v-btn
           :disabled="currentPage >= pageCount"
+          class="base-datatable__pagination-button"
           density="comfortable"
-          icon="mdi-chevron-right"
           variant="text"
           @click="currentPage += 1"
-        />
+        >
+          <Icon name="arrow-right-s-line" />
+        </v-btn>
       </div>
     </footer>
   </section>
@@ -140,15 +120,12 @@
   import { computed, ref, watch } from 'vue'
   import type {
     DataTableColumn,
-    DataTableFilterValue,
-    DataTableFilters,
     DataTableRow,
   } from '@/features/datatable/types/shared-table.types'
 
   const props = withDefaults(defineProps<{
     columns: DataTableColumn[]
     rows: DataTableRow[]
-    filters: DataTableFilters
     rowKey?: string
     loading?: boolean
     error?: string
@@ -161,7 +138,7 @@
   })
 
   const emit = defineEmits<{
-    'update:filters': [filters: DataTableFilters]
+    'row-click': [row: DataTableRow]
   }>()
 
   const currentPage = ref(1)
@@ -203,21 +180,6 @@
     },
   )
 
-  watch(
-    () => props.filters,
-    () => {
-      currentPage.value = 1
-    },
-    { deep: true },
-  )
-
-  function updateFilter (key: string, value: DataTableFilterValue) {
-    emit('update:filters', {
-      ...props.filters,
-      [key]: value,
-    })
-  }
-
   function formatCell (value: unknown) {
     if (value === null || value === undefined || value === '') return '-'
     return String(value)
@@ -252,8 +214,8 @@
   }
 
   function getSortIcon (key: string) {
-    if (sortState.value.key !== key) return 'mdi-swap-vertical'
-    return sortState.value.direction === 'asc' ? 'mdi-arrow-up' : 'mdi-arrow-down'
+    if (sortState.value.key !== key) return 'expand-up-down-line'
+    return sortState.value.direction === 'asc' ? 'arrow-up-s-line' : 'arrow-down-s-line'
   }
 
   function getSortTitle (column: DataTableColumn) {
@@ -287,6 +249,10 @@
       sensitivity: 'base',
     })
   }
+
+  function handleRowClick(row: DataTableRow) {
+    emit('row-click', row)
+  }
 </script>
 
 <style scoped>
@@ -295,6 +261,7 @@
     min-width: 0;
     min-height: 0;
     flex: 1;
+    width: 100%;
     flex-direction: column;
     border: 1px solid rgb(var(--v-theme-grey-lighten-3));
     border-radius: var(--df-radius-base);
@@ -306,25 +273,26 @@
     min-height: 0;
     flex: 1;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
   .base-datatable__table {
+    width: 100%;
     height: 100%;
-    min-width: 1120px;
+    min-width: 640px;
     background: rgb(var(--v-theme-surface));
   }
 
   .base-datatable__table :deep(.v-table__wrapper) {
     min-height: 0;
-    overflow-x: auto;
-    overflow-y: auto;
+    overflow-y: visible;
+    overflow-x: visible;
   }
 
   .base-datatable__table :deep(th) {
-    height: 92px;
-    padding: 8px 12px;
+    height: 44px;
+    padding: 6px 12px;
     border-bottom: 1px solid rgb(var(--v-theme-grey-lighten-3));
     background: rgb(var(--v-theme-surface));
     color: rgb(var(--v-theme-on-surface));
@@ -337,8 +305,18 @@
   .base-datatable__header-cell {
     display: flex;
     min-width: 0;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* align header content to match column alignment */
+  .base-datatable__cell--center .base-datatable__header-cell {
+    justify-content: center;
+  }
+
+  .base-datatable__cell--end .base-datatable__header-cell {
+    justify-content: flex-end;
   }
 
   .base-datatable__header-label {
@@ -365,10 +343,27 @@
     cursor: pointer;
   }
 
+  /* when column is center/end align the header sort button accordingly */
+  .base-datatable__cell--center .base-datatable__sort-button {
+    justify-content: center;
+  }
+
+  .base-datatable__cell--end .base-datatable__sort-button {
+    justify-content: flex-end;
+  }
+
   .base-datatable__sort-icon {
+    display: inline-flex;
     flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
     color: rgb(var(--v-theme-on-surface-variant));
     opacity: 0.58;
+  }
+
+  .base-datatable__sort-icon :deep(i) {
+    font-size: 1rem;
+    line-height: 1;
   }
 
   .base-datatable__sort-button:hover .base-datatable__sort-icon,
@@ -392,46 +387,15 @@
     background: rgba(var(--v-theme-primary), 0.04);
   }
 
-  .base-datatable__filter {
-    min-width: 112px;
-  }
-
-  .base-datatable__filter :deep(.v-field__input),
-  .base-datatable__filter :deep(.v-field__input input),
-  .base-datatable__filter :deep(.v-select__selection-text),
-  .base-datatable__page-size :deep(.v-field__input),
-  .base-datatable__page-size :deep(.v-select__selection-text),
-  .base-datatable__filter :deep(.v-field__input::placeholder),
-  .base-datatable__filter :deep(input::placeholder) {
-    font-family: var(--df-font-body);
-    font-size: 0.8125rem;
-    line-height: 1.125rem;
-    letter-spacing: 0;
-  }
-
-  .base-datatable__filter :deep(input::placeholder) {
-    color: rgb(var(--v-theme-on-surface-variant));
-    opacity: 0.72;
-  }
-
-  .base-datatable__filter :deep(.v-field) {
-    border-radius: var(--df-radius-base);
-    background: rgb(var(--v-theme-surface));
+  .base-datatable__row {
+    cursor: pointer;
   }
 
   .base-datatable__cell--center {
     text-align: center;
   }
 
-  .base-datatable__cell--center .base-datatable__filter :deep(.v-field__input) {
-    text-align: center;
-  }
-
   .base-datatable__cell--end {
-    text-align: right;
-  }
-
-  .base-datatable__cell--end .base-datatable__filter :deep(.v-field__input) {
     text-align: right;
   }
 
@@ -469,6 +433,28 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+  }
+
+  .base-datatable__page-size :deep(.v-field__input),
+  .base-datatable__page-size :deep(.v-select__selection-text) {
+    font-family: var(--df-font-body);
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+    letter-spacing: 0;
+  }
+
+  .base-datatable__page-size :deep(.v-field) {
+    border-radius: var(--df-radius-base);
+    background: rgb(var(--v-theme-surface));
+  }
+
+  .base-datatable__pagination-button :deep(i) {
+    font-size: 1.125rem;
+  }
+
+  .base-datatable__pagination-button :deep(i) {
+    font-size: 1.125rem;
+    line-height: 1;
   }
 
   .base-datatable__page-size {
