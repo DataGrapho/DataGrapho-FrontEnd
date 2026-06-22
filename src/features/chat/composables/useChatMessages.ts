@@ -91,7 +91,11 @@ function clearSession() {
 }
 
 async function refreshChats () {
-  chats.value = await listChats(searchTerm.value)
+  try {
+    chats.value = await listChats(searchTerm.value)
+  } catch {
+    chats.value = []
+  }
 }
 
 async function startNewChat () {
