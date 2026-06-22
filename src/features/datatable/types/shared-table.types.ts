@@ -13,6 +13,7 @@ export type DataTableColumn = {
   width?: string
   minWidth?: string
   align?: 'start' | 'center' | 'end'
+  sortable?: boolean
   filterable?: boolean
   filterType?: 'text' | 'number' | 'select'
   filterPlaceholder?: string
