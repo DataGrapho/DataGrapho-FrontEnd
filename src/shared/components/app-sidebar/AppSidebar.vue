@@ -39,9 +39,16 @@
         label="Datatable"
         to="/app/datatable"
       />
+      <AppSidebarNavLink
+        v-if="canAccessAdminUsers"
+        :active="route.name === 'app-admin-users'"
+        icon="shield-user-line"
+        label="Administração"
+        to="/app/admin-users"
+      />
     </nav>
 
-    <nav class="app-sidebar__bottom-nav">
+    <nav class="app-sidebar__bottom-nav" :style="{ gridTemplateColumns: bottomNavColumns }">
       <RouterLink
         class="app-sidebar__bottom-link"
         :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-chat' }"
@@ -58,6 +65,15 @@
         <Icon name="table-view" />
         <span>Datatable</span>
       </RouterLink>
+      <RouterLink
+        v-if="canAccessAdminUsers"
+        class="app-sidebar__bottom-link"
+        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-admin-users' }"
+        to="/app/admin-users"
+      >
+        <Icon name="shield-user-line" />
+        <span>Administração</span>
+      </RouterLink>
     </nav>
 
     <div class="app-sidebar__footer">
@@ -67,7 +83,6 @@
         :title="isDarkTheme ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
         @click="toggleTheme"
       />
-      <AppSidebarActionButton icon="question-line" label="Ajuda" title="Ajuda" />
       <AppSidebarActionButton label="Sair" title="Sair" @click="$emit('logout')">
         <template #icon>
           <v-icon class="app-sidebar__icon" size="20">
@@ -80,10 +95,12 @@
 </template>
 
 <script setup lang="ts">
-  import { defineComponent, h } from 'vue'
+  import { computed, defineComponent, h } from 'vue'
   import { useRoute } from 'vue-router'
   import AppSidebarActionButton from './AppSidebarActionButton.vue'
   import AppSidebarNavLink from './AppSidebarNavLink.vue'
+  import { hasAdministrativeAccess } from '@/features/admin-users/services/admin-user-permissions.service'
+  import { getAuthenticatedSession } from '@/features/auth/services/auth-session.service'
   import { useAppTheme } from '@/shared/composables/useAppTheme'
 
   const XRiLogoutBoxRLine = defineComponent({
@@ -104,6 +121,8 @@
 
   const { isDarkTheme, toggleTheme } = useAppTheme()
   const route = useRoute()
+  const canAccessAdminUsers = hasAdministrativeAccess(getAuthenticatedSession())
+  const bottomNavColumns = computed(() => (canAccessAdminUsers ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'))
 
 </script>
 
@@ -248,7 +267,6 @@
 
     .app-sidebar__bottom-nav {
       display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
 
