@@ -13,19 +13,51 @@ export type ResetPasswordPayload = {
   token: string
 }
 
+export type AuthUserProfile = {
+  id_perfil: number
+  nome: string
+  ativo?: boolean
+  nivel?: number | null
+}
+
+export type AuthUserCompany = {
+  id_empresa: number
+  nome: string
+  cnpj?: string
+}
+
+export type AuthUserBranch = {
+  id_filial: number
+  nome: string
+}
+
+export type AuthUserDepartment = {
+  id_setor: number
+  nome: string
+}
+
+export type AuthUserAccess = {
+  id: number
+  ativo: boolean
+  empresa?: AuthUserCompany | null
+  filial?: AuthUserBranch | null
+  setor?: AuthUserDepartment | null
+  perfil?: AuthUserProfile | null
+}
+
+export type AuthUser = {
+  id_usuario: number
+  nome?: string
+  email: string
+  is_active?: boolean
+  is_staff?: boolean
+}
+
 export type LoginResponse = {
   access: string
   refresh: string
-  usuario?: {
-    id_usuario: number
-    nome?: string
-    email: string
-    is_active?: boolean
-  }
-  acessos?: Array<{
-    id: number
-    ativo: boolean
-  }>
+  usuario?: AuthUser
+  acessos?: AuthUserAccess[]
 }
 
 export type AuthSession = {
@@ -35,6 +67,8 @@ export type AuthSession = {
   refreshToken?: string
   expiresAt?: string
   createdAt: string
+  usuario?: AuthUser
+  acessos: AuthUserAccess[]
 }
 
 export type AuthAuditEventType =
