@@ -71,12 +71,12 @@ describe('integracao do fluxo de criacao de usuario', () => {
       nome: 'Sem Acesso',
       password: 'SenhaSegura123',
       is_active: true,
-      is_staff: false,
+      is_superuser: false,
     })
     expect(store.successMessage.value).toContain('sucesso')
   })
 
-  it('envia is_staff true quando administrador esta marcado', async () => {
+  it('envia is_superuser true quando superusuario esta marcado', async () => {
     getAuthenticatedSessionMock.mockReturnValue(buildAdminSession())
     getAdminUsersRegisterSchemaMock.mockResolvedValue(buildRegisterSchema())
     createAdminUserMock.mockResolvedValue({
@@ -91,7 +91,7 @@ describe('integracao do fluxo de criacao de usuario', () => {
     store.form.value.cpf = '529.982.247-25'
     store.form.value.nome = 'Admin Novo'
     store.form.value.password = 'SenhaSegura123'
-    store.form.value.is_staff = true
+    store.form.value.is_superuser = true
 
     await store.submit()
 
@@ -101,7 +101,7 @@ describe('integracao do fluxo de criacao de usuario', () => {
       nome: 'Admin Novo',
       password: 'SenhaSegura123',
       is_active: true,
-      is_staff: true,
+      is_superuser: true,
     })
   })
 })

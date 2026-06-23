@@ -39,7 +39,7 @@ function buildDefaultFormDraft(): AdminUsersFormDraft {
     cpf: '',
     nome: '',
     password: '',
-    is_staff: false,
+    is_superuser: false,
     acessos: [],
   }
 }
@@ -124,7 +124,7 @@ export function useAdminUserForm() {
       nome: form.value.nome.trim(),
       password: form.value.password,
       is_active: true,
-      is_staff: form.value.is_staff,
+      is_superuser: form.value.is_superuser,
     }
 
     if (accessPayload.length > 0) {

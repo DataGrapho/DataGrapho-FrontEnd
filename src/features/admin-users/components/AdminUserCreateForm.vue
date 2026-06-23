@@ -45,12 +45,12 @@
     />
 
     <v-checkbox
-      :model-value="modelValue.is_staff"
+      :model-value="modelValue.is_superuser"
       color="primary"
       label="É administrador?"
       hide-details
       density="comfortable"
-      @update:model-value="updateField('is_staff', Boolean($event))"
+      @update:model-value="updateField('is_superuser', Boolean($event))"
     />
   </div>
 </template>

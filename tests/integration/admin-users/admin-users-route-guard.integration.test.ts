@@ -39,7 +39,7 @@ describe('integracao da guarda de rota administrativa', () => {
     ensureValidAccessTokenMock.mockResolvedValue('valid-access-token')
     getAuthenticatedSessionMock.mockReturnValue({
       acessos: [],
-      usuario: { id_usuario: 1, email: 'user@datagrapho.local', is_staff: false },
+      usuario: { id_usuario: 1, email: 'user@datagrapho.local', is_superuser: false },
     })
 
     let guard: ((to: any) => unknown) | null = null
