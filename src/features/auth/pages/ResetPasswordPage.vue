@@ -1,6 +1,6 @@
 <template>
   <AuthFormCard
-    :title="`Troca de senha para ${displayName}`"
+    title="Mude sua senha"
     description="Certifique-se que a senha tenha pelo menos 8 caracteres, incluindo um número e uma letra minúscula."
   >
     <AuthForm @submit="onSubmit">
@@ -55,16 +55,6 @@
   const confirmPasswordError = ref('')
   const feedbackMessage = ref('')
   const isSubmitting = ref(false)
-
-  const displayName = computed(() => {
-    const queryName = route.query.name
-
-    if (typeof queryName === 'string' && queryName.trim().length > 0) {
-      return queryName
-    }
-
-    return 'Israel'
-  })
 
   const resetToken = computed(() => {
     const queryToken = route.query.token
