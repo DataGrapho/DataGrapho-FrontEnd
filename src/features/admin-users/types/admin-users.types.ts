@@ -56,7 +56,7 @@ export type AdminUsersCreatePayload = {
   nome: string
   password: string
   is_active: boolean
-  is_staff?: boolean
+  is_superuser?: boolean
   acessos?: AdminUsersAccessCreatePayload[]
 }
 
@@ -129,6 +129,6 @@ export type AdminUsersFormDraft = {
   cpf: string
   nome: string
   password: string
-  is_staff: boolean
+  is_superuser: boolean
   acessos: AdminUsersAccessDraft[]
 }

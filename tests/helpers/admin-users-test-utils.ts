@@ -12,7 +12,7 @@ export function buildAdminSession(overrides: Partial<AuthSession> = {}): AuthSes
       id_usuario: 1,
       email: 'admin@datagrapho.local',
       nome: 'Admin',
-      is_staff: true,
+      is_superuser: true,
     },
     acessos: [
       {
@@ -39,7 +39,7 @@ export function buildNonAdminSession(overrides: Partial<AuthSession> = {}): Auth
       id_usuario: 2,
       email: 'user@datagrapho.local',
       nome: 'User',
-      is_staff: false,
+      is_superuser: false,
     },
     acessos: [
       {

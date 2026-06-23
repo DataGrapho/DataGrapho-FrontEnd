@@ -3,11 +3,11 @@ import { hasAdministrativeAccess } from '@/features/admin-users/services/admin-u
 import { buildAdminSession, buildNonAdminSession } from '../../../helpers/admin-users-test-utils'
 
 describe('permissoes administrativas de usuario', () => {
-  it('libera administracao para usuario staff', () => {
+  it('libera administracao para superusuario', () => {
     expect(hasAdministrativeAccess(buildAdminSession())).toBe(true)
   })
 
-  it('nega administracao para usuario sem is_staff', () => {
+  it('nega administracao para usuario sem is_superuser', () => {
     expect(hasAdministrativeAccess(buildNonAdminSession())).toBe(false)
   })
 
