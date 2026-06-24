@@ -4,6 +4,16 @@
       <v-table class="base-datatable__table" fixed-header>
         <thead>
           <tr>
+            <th v-if="selectable" class="base-datatable__cell base-datatable__cell--select">
+              <v-checkbox
+                :indeterminate="isPageIndeterminate"
+                :model-value="isPageFullySelected"
+                color="primary"
+                density="compact"
+                hide-details
+                @update:model-value="togglePageSelection(Boolean($event))"
+              />
+            </th>
             <th
               v-for="column in columns"
               :key="column.key"
@@ -36,17 +46,17 @@
 
         <tbody>
           <tr v-if="loading">
-            <td :colspan="columns.length" class="base-datatable__state">
+            <td :colspan="columns.length + (selectable ? 1 : 0)" class="base-datatable__state">
               Carregando dados...
             </td>
           </tr>
           <tr v-else-if="error">
-            <td :colspan="columns.length" class="base-datatable__state base-datatable__state--error">
+            <td :colspan="columns.length + (selectable ? 1 : 0)" class="base-datatable__state base-datatable__state--error">
               {{ error }}
             </td>
           </tr>
           <tr v-else-if="sortedRows.length === 0">
-            <td :colspan="columns.length" class="base-datatable__state">
+            <td :colspan="columns.length + (selectable ? 1 : 0)" class="base-datatable__state">
               {{ emptyText }}
             </td>
           </tr>
@@ -55,8 +65,20 @@
             v-else
             :key="String(row[rowKey])"
             class="base-datatable__row"
-            @click="handleRowClick(row)"
+            :class="{ 'base-datatable__row--selected': isSelected(row) }"
+            @contextmenu="handleRowContextMenu(row, $event)"
+            @mousedown="handleRowPointerDown(row, $event)"
           >
+            <td v-if="selectable" class="base-datatable__cell base-datatable__cell--select">
+              <v-checkbox
+                :model-value="isSelected(row)"
+                color="primary"
+                density="compact"
+                hide-details
+                @click.stop
+                @mousedown="handleCheckboxPointerDown(row, $event)"
+              />
+            </td>
             <td
               v-for="column in columns"
               :key="`${row[rowKey]}-${column.key}`"
@@ -67,7 +89,7 @@
                 :row="row"
                 :value="row[column.key]"
               >
-                {{ formatCell(row[column.key]) }}
+                {{ formatCell(column.key, row[column.key]) }}
               </slot>
             </td>
           </tr>
@@ -76,9 +98,10 @@
     </div>
 
     <footer class="base-datatable__footer">
-      <span class="base-datatable__count text-body-small">
-        {{ visibleRangeText }}
-      </span>
+      <DataTableFooterMeta
+        :range-text="visibleRangeText"
+        :selected-count="selectedCount"
+      />
 
       <div class="base-datatable__pagination">
         <v-select
@@ -113,11 +136,42 @@
         </v-btn>
       </div>
     </footer>
+
+    <v-menu
+      v-model="contextMenu.open"
+      :close-on-content-click="true"
+      location="bottom start"
+      :target="[contextMenu.x, contextMenu.y]"
+    >
+      <v-list class="base-datatable__context-menu" density="compact" slim>
+        <v-list-item
+          v-if="contextMenuShowEdit"
+          title="Editar"
+          @click="handleContextEdit"
+        >
+          <template #prepend>
+            <v-icon icon="mdi-pencil-outline" size="16" />
+          </template>
+        </v-list-item>
+        <v-list-item
+          title="Excluir"
+          @click="handleContextDelete"
+        >
+          <template #prepend>
+            <v-icon icon="mdi-delete-outline" size="16" />
+          </template>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </section>
 </template>
 
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
+  import DataTableFooterMeta from '@/features/datatable/components/DataTableFooterMeta.vue'
+  import { useDataTableContextMenu } from '@/features/datatable/composables/useDataTableContextMenu'
+  import { useDataTableSelection } from '@/features/datatable/composables/useDataTableSelection'
+  import { formatDeparaCellValue } from '@/features/datatable/utils/depara-table-format'
   import type {
     DataTableColumn,
     DataTableRow,
@@ -130,15 +184,19 @@
     loading?: boolean
     error?: string
     emptyText?: string
+    selectable?: boolean
   }>(), {
     rowKey: 'id',
     loading: false,
     error: '',
     emptyText: 'Nenhum registro encontrado.',
+    selectable: true,
   })
 
   const emit = defineEmits<{
-    'row-click': [row: DataTableRow]
+    'selection-change': [rows: DataTableRow[]]
+    'edit-row': [row: DataTableRow]
+    'delete-rows': [rows: DataTableRow[]]
   }>()
 
   const currentPage = ref(1)
@@ -165,6 +223,47 @@
   const pageCount = computed(() => Math.max(1, Math.ceil(sortedRows.value.length / itemsPerPage.value)))
   const firstItemIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value)
   const paginatedRows = computed(() => sortedRows.value.slice(firstItemIndex.value, firstItemIndex.value + itemsPerPage.value))
+
+  const {
+    selectedKeys,
+    isSelected,
+    handleRowPointerDown,
+    ensureRowSelected,
+    handleCheckboxPointerDown,
+    toggleAllVisible,
+    clearSelection,
+    pruneMissingRows,
+  } = useDataTableSelection(paginatedRows, props.rowKey)
+
+  const isPageFullySelected = computed(() =>
+    paginatedRows.value.length > 0 && paginatedRows.value.every(row => isSelected(row)),
+  )
+
+  const isPageIndeterminate = computed(() =>
+    paginatedRows.value.some(row => isSelected(row)) && !isPageFullySelected.value,
+  )
+
+  const selectedCount = computed(() => selectedKeys.value.size)
+
+  const selectedRows = computed(() =>
+    props.rows.filter(row => selectedKeys.value.has(String(row[props.rowKey]))),
+  )
+
+  watch(selectedRows, rows => {
+    emit('selection-change', rows)
+  })
+
+  watch(
+    () => props.rows,
+    rows => {
+      pruneMissingRows(new Set(rows.map(row => String(row[props.rowKey]))))
+    },
+    { deep: true },
+  )
+
+  function togglePageSelection (selected: boolean) {
+    toggleAllVisible(paginatedRows.value, selected)
+  }
   const visibleRangeText = computed(() => {
     if (sortedRows.value.length === 0) return '0 registros'
 
@@ -180,15 +279,39 @@
     },
   )
 
-  function formatCell (value: unknown) {
-    if (value === null || value === undefined || value === '') return '-'
-    return String(value)
+  const { menu: contextMenu, contextRow, openContextMenu, closeContextMenu } = useDataTableContextMenu<DataTableRow>()
+
+  const contextMenuShowEdit = computed(() => selectedCount.value <= 1)
+
+  function handleRowContextMenu (row: DataTableRow, event: MouseEvent) {
+    ensureRowSelected(row)
+    openContextMenu(event, row)
+  }
+
+  function handleContextEdit () {
+    const row = selectedRows.value[0] ?? contextRow.value
+    closeContextMenu()
+    if (row) emit('edit-row', row)
+  }
+
+  function handleContextDelete () {
+    const rows = selectedRows.value.length > 0
+      ? [...selectedRows.value]
+      : contextRow.value
+        ? [contextRow.value]
+        : []
+    closeContextMenu()
+    if (rows.length > 0) emit('delete-rows', rows)
+  }
+
+  function formatCell (columnKey: string, value: unknown) {
+    return formatDeparaCellValue(columnKey, value)
   }
 
   function getColumnStyle (column: DataTableColumn) {
     return {
       width: column.width,
-      minWidth: column.minWidth,
+      minWidth: column.minWidth ?? column.width,
     }
   }
 
@@ -250,54 +373,38 @@
     })
   }
 
-  function handleRowClick(row: DataTableRow) {
-    emit('row-click', row)
-  }
+  defineExpose({ clearSelection })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  @use '@/features/datatable/styles/datatable-scroll' as scroll;
+
   .base-datatable {
-    display: flex;
-    min-width: 0;
-    min-height: 0;
-    flex: 1;
-    width: 100%;
-    flex-direction: column;
-    border: 1px solid rgb(var(--v-theme-grey-lighten-3));
-    border-radius: var(--df-radius-base);
-    background: rgb(var(--v-theme-surface));
-    overflow: hidden;
+    @include scroll.datatable-shell;
   }
 
   .base-datatable__scroll {
-    min-height: 0;
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    @include scroll.datatable-body-scroll;
   }
 
   .base-datatable__table {
-    width: 100%;
-    height: 100%;
-    min-width: 640px;
+    @include scroll.datatable-table-fixed-header;
+    width: max-content;
+    min-width: 100%;
+    table-layout: auto;
     background: rgb(var(--v-theme-surface));
   }
 
-  .base-datatable__table :deep(.v-table__wrapper) {
-    min-height: 0;
-    overflow-y: visible;
-    overflow-x: visible;
+  .base-datatable__table :deep(tbody tr:last-child td) {
+    border-bottom: 0;
   }
 
   .base-datatable__table :deep(th) {
-    height: 44px;
-    padding: 6px 12px;
-    border-bottom: 1px solid rgb(var(--v-theme-grey-lighten-3));
-    background: rgb(var(--v-theme-surface));
+    height: 40px;
+    padding: 4px 10px;
     color: rgb(var(--v-theme-on-surface));
     font-family: var(--df-font-display);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     white-space: nowrap;
   }
@@ -307,10 +414,9 @@
     min-width: 0;
     flex-direction: row;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
   }
 
-  /* align header content to match column alignment */
   .base-datatable__cell--center .base-datatable__header-cell {
     justify-content: center;
   }
@@ -343,7 +449,6 @@
     cursor: pointer;
   }
 
-  /* when column is center/end align the header sort button accordingly */
   .base-datatable__cell--center .base-datatable__sort-button {
     justify-content: center;
   }
@@ -362,7 +467,7 @@
   }
 
   .base-datatable__sort-icon :deep(i) {
-    font-size: 1rem;
+    font-size: 0.875rem;
     line-height: 1;
   }
 
@@ -373,13 +478,11 @@
   }
 
   .base-datatable__table :deep(td) {
-    height: 48px;
-    padding: 8px 12px;
-    border-bottom: 1px solid rgb(var(--v-theme-grey-lighten-3));
+    height: 40px;
+    padding: 4px 10px;
+    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
     color: rgb(var(--v-theme-on-surface));
-    font-family: var(--df-font-body);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    @include scroll.datatable-cell-typography;
     vertical-align: middle;
   }
 
@@ -391,6 +494,21 @@
     cursor: pointer;
   }
 
+  .base-datatable__row--selected td {
+    @include scroll.datatable-row-selected;
+  }
+
+  .base-datatable__cell--select {
+    width: 40px;
+    min-width: 40px;
+    padding-inline: 6px !important;
+    text-align: center;
+  }
+
+  .base-datatable__cell--select :deep(.v-selection-control) {
+    justify-content: center;
+  }
+
   .base-datatable__cell--center {
     text-align: center;
   }
@@ -400,9 +518,12 @@
   }
 
   .base-datatable__state {
-    height: 160px !important;
+    height: auto !important;
+    min-height: 120px;
+    padding: 32px 12px !important;
     text-align: center;
     color: rgb(var(--v-theme-on-surface-variant));
+    @include scroll.datatable-cell-typography;
   }
 
   .base-datatable__state--error {
@@ -411,20 +532,20 @@
 
   .base-datatable__footer {
     display: flex;
-    min-height: 56px;
+    flex-shrink: 0;
+    min-height: 48px;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
     padding: 8px 12px;
-    border-top: 1px solid rgb(var(--v-theme-grey-lighten-3));
+    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   }
 
-  .base-datatable__count,
   .base-datatable__page {
     color: rgb(var(--v-theme-on-surface-variant));
     font-family: var(--df-font-body);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
     letter-spacing: 0;
     white-space: nowrap;
   }
@@ -449,11 +570,7 @@
   }
 
   .base-datatable__pagination-button :deep(i) {
-    font-size: 1.125rem;
-  }
-
-  .base-datatable__pagination-button :deep(i) {
-    font-size: 1.125rem;
+    font-size: 1rem;
     line-height: 1;
   }
 
@@ -474,10 +591,22 @@
 </style>
 
 <style>
-  .base-datatable__select-menu .v-list-item-title {
+  .base-datatable__select-menu .v-list-item-title,
+  .base-datatable__context-menu .v-list-item-title {
     font-family: var(--df-font-body);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
     letter-spacing: 0;
+  }
+
+  .base-datatable__context-menu .v-list-item__prepend {
+    width: auto;
+    min-width: 0;
+    margin-inline-end: 6px;
+  }
+
+  .base-datatable__context-menu .v-list-item__prepend > .v-icon {
+    margin-inline-end: 0;
+    opacity: 0.9;
   }
 </style>

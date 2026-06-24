@@ -34,10 +34,10 @@
         to="/app"
       />
       <AppSidebarNavLink
-        :active="route.name === 'app-datatable'"
+        :active="route.name === 'app-de-para'"
         icon="table-view"
-        label="Datatable"
-        to="/app/datatable"
+        label="De/Para"
+        to="/app/de-para"
       />
       <AppSidebarNavLink
         v-if="canAccessAdminUsers"
@@ -59,11 +59,11 @@
       </RouterLink>
       <RouterLink
         class="app-sidebar__bottom-link"
-        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-datatable' }"
-        to="/app/datatable"
+        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-de-para' }"
+        to="/app/de-para"
       >
         <Icon name="table-view" />
-        <span>Datatable</span>
+        <span>De/Para</span>
       </RouterLink>
       <RouterLink
         v-if="canAccessAdminUsers"

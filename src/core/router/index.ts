@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router'
 import AuthLayout from '@/core/layouts/AuthLayout.vue'
 import DefaultLayout from '@/core/layouts/DefaultLayout.vue'
 import {
@@ -7,6 +7,18 @@ import {
 } from '@/features/auth/services/auth-session.service'
 import { ensureValidAccessToken } from '@/features/auth/services/auth-token-refresh.service'
 import { hasAdministrativeAccess } from '@/features/admin-users/services/admin-user-permissions.service'
+
+const APP_NAME = 'DataGrapho'
+
+function resolvePageTitle (route: RouteLocationNormalizedLoaded) {
+  const matched = [...route.matched].reverse().find(record => typeof record.meta.title === 'string')
+  return matched?.meta.title
+}
+
+function syncDocumentTitle (route: RouteLocationNormalizedLoaded) {
+  const pageTitle = resolvePageTitle(route)
+  document.title = pageTitle ? `${pageTitle} | ${APP_NAME}` : APP_NAME
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +37,9 @@ const router = createRouter({
         {
           path: '',
           name: 'login',
+          meta: {
+            title: 'Entrar',
+          },
           component: () => import('@/features/auth/pages/LoginPage.vue'),
         },
       ],
@@ -39,6 +54,9 @@ const router = createRouter({
         {
           path: '',
           name: 'forgot-password',
+          meta: {
+            title: 'Esqueci a senha',
+          },
           component: () => import('@/features/auth/pages/ForgotPasswordPage.vue'),
         },
       ],
@@ -53,6 +71,9 @@ const router = createRouter({
         {
           path: '',
           name: 'reset-password',
+          meta: {
+            title: 'Redefinir senha',
+          },
           component: () => import('@/features/auth/pages/ResetPasswordPage.vue'),
         },
       ],
@@ -77,13 +98,17 @@ const router = createRouter({
           component: () => import('@/features/chat/pages/ChatPage.vue'),
         },
         {
-          path: 'datatable',
-          name: 'app-datatable',
+          path: 'de-para',
+          name: 'app-de-para',
           meta: {
             hideTopbar: true,
-            title: 'Datatable',
+            title: 'De/Para',
           },
           component: () => import('@/features/datatable/pages/DeparaDatatablePage.vue'),
+        },
+        {
+          path: 'datatable',
+          redirect: { name: 'app-de-para' },
         },
         {
           path: 'admin-users',
@@ -138,6 +163,10 @@ router.beforeEach(async (to) => {
   }
 
   return true
+})
+
+router.afterEach((to) => {
+  syncDocumentTitle(to)
 })
 
 export default router
