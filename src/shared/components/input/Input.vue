@@ -16,9 +16,11 @@
       :hint="hint"
       :persistent-hint="persistentHint"
       :clearable="clearable"
+      density="compact"
+      single-line
       variant="outlined"
       color="primary"
-      class="input"
+      class="input-wrapper__control"
       hide-details="auto"
       @update:model-value="onUpdate"
     />
@@ -34,7 +36,7 @@
 
   const attrs = useAttrs()
 
-  const props = withDefaults(defineProps<{
+  withDefaults(defineProps<{
     id?: string
     modelValue?: string
     label?: string
@@ -73,51 +75,19 @@
   }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  @use '@/shared/styles/form-vuetify-control' as form-control;
+
   .input-wrapper--with-field-label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    @include form-control.form-field-label;
   }
 
   .input-field-label {
     color: rgb(var(--v-theme-on-surface-variant));
-  }
-
-  .input {
-    --v-field-border-width: 1px;
-  }
-
-  .input :deep(.v-field) {
-    border-radius: var(--df-radius-base);
-    background-color: rgb(var(--v-theme-surface));
-  }
-
-  .input :deep(.v-field__outline) {
-    color: var(--v-border-color);
-  }
-
-  .input :deep(.v-field__input),
-  .input :deep(.v-label) {
-    font-family: 'Sansation', sans-serif;
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: 0;
-  }
-
-  .input :deep(.v-input__details) {
-    padding-inline: 0;
-  }
-
-  .input :deep(.v-messages__message) {
     font-family: var(--df-font-body);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    font-weight: 400;
-    text-align: left;
   }
 
-  .input :deep(.v-input--error .v-messages__message) {
-    color: rgb(var(--v-theme-error));
+  .input-wrapper__control {
+    @include form-control.form-vuetify-control;
   }
 </style>
