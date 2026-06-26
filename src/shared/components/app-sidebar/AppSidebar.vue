@@ -40,11 +40,18 @@
         to="/app/datatable"
       />
       <AppSidebarNavLink
-        v-if="canAccessAdminUsers"
-        :active="route.name === 'app-admin-users'"
+        v-if="canAccessAdministration"
+        :active="route.name === 'app-administration'"
+        icon="building-line"
+        label="Administracao"
+        to="/app/administracao"
+      />
+      <AppSidebarNavLink
+        v-if="canManageUsers"
+        :active="route.name === 'app-manage-users'"
         icon="shield-user-line"
-        label="Administração"
-        to="/app/admin-users"
+        label="Gerenciar usuarios"
+        to="/app/gerenciar-usuarios"
       />
     </nav>
 
@@ -66,13 +73,22 @@
         <span>Datatable</span>
       </RouterLink>
       <RouterLink
-        v-if="canAccessAdminUsers"
+        v-if="canAccessAdministration"
         class="app-sidebar__bottom-link"
-        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-admin-users' }"
-        to="/app/admin-users"
+        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-administration' }"
+        to="/app/administracao"
+      >
+        <Icon name="building-line" />
+        <span>Administracao</span>
+      </RouterLink>
+      <RouterLink
+        v-if="canManageUsers"
+        class="app-sidebar__bottom-link"
+        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-manage-users' }"
+        to="/app/gerenciar-usuarios"
       >
         <Icon name="shield-user-line" />
-        <span>Administração</span>
+        <span>Usuarios</span>
       </RouterLink>
     </nav>
 
@@ -99,7 +115,10 @@
   import { useRoute } from 'vue-router'
   import AppSidebarActionButton from './AppSidebarActionButton.vue'
   import AppSidebarNavLink from './AppSidebarNavLink.vue'
-  import { hasAdministrativeAccess } from '@/features/admin-users/services/admin-user-permissions.service'
+  import {
+    hasSuperuserAccess,
+    hasUserManagementAccess,
+  } from '@/features/auth/services/user-permissions.service'
   import { getAuthenticatedSession } from '@/features/auth/services/auth-session.service'
   import { useAppTheme } from '@/shared/composables/useAppTheme'
 
@@ -121,8 +140,18 @@
 
   const { isDarkTheme, toggleTheme } = useAppTheme()
   const route = useRoute()
-  const canAccessAdminUsers = hasAdministrativeAccess(getAuthenticatedSession())
-  const bottomNavColumns = computed(() => (canAccessAdminUsers ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'))
+  const session = getAuthenticatedSession()
+  const canAccessAdministration = hasSuperuserAccess(session)
+  const canManageUsers = hasUserManagementAccess(session)
+
+  const bottomNavItemCount = computed(() => {
+    let count = 2
+    if (canAccessAdministration) count += 1
+    if (canManageUsers) count += 1
+    return count
+  })
+
+  const bottomNavColumns = computed(() => `repeat(${bottomNavItemCount.value}, 1fr)`)
 
 </script>
 

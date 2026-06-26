@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router'
 import AuthLayout from '@/core/layouts/AuthLayout.vue'
 import DefaultLayout from '@/core/layouts/DefaultLayout.vue'
 import {
@@ -6,7 +6,22 @@ import {
   isSessionAuthenticated,
 } from '@/features/auth/services/auth-session.service'
 import { ensureValidAccessToken } from '@/features/auth/services/auth-token-refresh.service'
-import { hasAdministrativeAccess } from '@/features/admin-users/services/admin-user-permissions.service'
+import {
+  hasSuperuserAccess,
+  hasUserManagementAccess,
+} from '@/features/auth/services/user-permissions.service'
+
+const APP_NAME = 'DataGrapho'
+
+function resolvePageTitle (route: RouteLocationNormalizedLoaded) {
+  const matched = [...route.matched].reverse().find(record => typeof record.meta.title === 'string')
+  return matched?.meta.title
+}
+
+function syncDocumentTitle (route: RouteLocationNormalizedLoaded) {
+  const pageTitle = resolvePageTitle(route)
+  document.title = pageTitle ? `${pageTitle} | ${APP_NAME}` : APP_NAME
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +40,9 @@ const router = createRouter({
         {
           path: '',
           name: 'login',
+          meta: {
+            title: 'Entrar',
+          },
           component: () => import('@/features/auth/pages/LoginPage.vue'),
         },
       ],
@@ -39,6 +57,9 @@ const router = createRouter({
         {
           path: '',
           name: 'forgot-password',
+          meta: {
+            title: 'Esqueci a senha',
+          },
           component: () => import('@/features/auth/pages/ForgotPasswordPage.vue'),
         },
       ],
@@ -53,6 +74,9 @@ const router = createRouter({
         {
           path: '',
           name: 'reset-password',
+          meta: {
+            title: 'Redefinir senha',
+          },
           component: () => import('@/features/auth/pages/ResetPasswordPage.vue'),
         },
       ],
@@ -77,23 +101,41 @@ const router = createRouter({
           component: () => import('@/features/chat/pages/ChatPage.vue'),
         },
         {
-          path: 'datatable',
-          name: 'app-datatable',
+          path: 'de-para',
+          name: 'app-de-para',
           meta: {
             hideTopbar: true,
-            title: 'Datatable',
+            title: 'De/Para',
           },
           component: () => import('@/features/datatable/pages/DeparaDatatablePage.vue'),
         },
         {
-          path: 'admin-users',
-          name: 'app-admin-users',
+          path: 'datatable',
+          redirect: { name: 'app-de-para' },
+        },
+        {
+          path: 'administracao',
+          name: 'app-administration',
           meta: {
-            requiresAdminPermission: true,
+            requiresSuperuser: true,
             hideTopbar: true,
-            title: 'Administração',
+            title: 'Administracao',
           },
-          component: () => import('@/features/admin-users/pages/AdminUsersPage.vue'),
+          component: () => import('@/features/administration/pages/AdministrationPage.vue'),
+        },
+        {
+          path: 'gerenciar-usuarios',
+          name: 'app-manage-users',
+          meta: {
+            requiresStaff: true,
+            hideTopbar: true,
+            title: 'Gerenciar usuarios',
+          },
+          component: () => import('@/features/manage-users/pages/ManageUsersPage.vue'),
+        },
+        {
+          path: 'admin-users',
+          redirect: { name: 'app-manage-users' },
         },
       ],
     },
@@ -131,13 +173,23 @@ router.beforeEach(async (to) => {
     }
   }
 
-  if (to.meta.requiresAdminPermission && !hasAdministrativeAccess(session)) {
+  if (to.meta.requiresSuperuser && !hasSuperuserAccess(session)) {
+    return {
+      name: 'app-chat',
+    }
+  }
+
+  if (to.meta.requiresStaff && !hasUserManagementAccess(session)) {
     return {
       name: 'app-chat',
     }
   }
 
   return true
+})
+
+router.afterEach((to) => {
+  syncDocumentTitle(to)
 })
 
 export default router
