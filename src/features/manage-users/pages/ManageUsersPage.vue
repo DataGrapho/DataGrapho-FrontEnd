@@ -113,13 +113,11 @@
 
   .manage-users-page {
     @include content-page.content-page-shell;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
+    gap: 12px;
 
     @media (max-width: 900px) {
-      height: auto;
-      min-height: 100%;
-      overflow: visible;
+      gap: 8px;
     }
   }
 
@@ -127,6 +125,7 @@
     @include content-page.content-page-header;
     align-items: flex-start;
     gap: var(--df-space-md);
+    flex-shrink: 0;
   }
 
   .manage-users-page__title-block {
@@ -158,7 +157,7 @@
   }
 
   .manage-users-page__table {
-    min-width: 0;
+    @include content-page.content-page-table-host;
     width: 100%;
   }
 

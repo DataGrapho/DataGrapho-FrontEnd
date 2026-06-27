@@ -23,79 +23,79 @@
         <v-tab value="perfis">Perfis</v-tab>
       </v-tabs>
 
-      <v-window v-model="activeTab" class="administration-page__panel">
-        <v-window-item value="empresas">
-          <AdministrationEntityTab
-            v-model:search-model="empresaSearch"
-            search-placeholder="Buscar empresas"
-            add-label="Adicionar empresa"
-            :columns="empresaColumns"
-            :rows="empresaRows"
-            row-key="id_empresa"
-            empty-text="Nenhuma empresa cadastrada."
-            :loading="loading"
-            :error="loadError"
-            @add="openEmpresaDialog()"
-            @row-click="openEmpresaDetail"
-            @edit-row="handleEmpresaEditRow"
-            @delete-rows="handleEmpresaDeleteRows"
-          />
-        </v-window-item>
+      <div class="administration-page__panel">
+        <AdministrationEntityTab
+          v-show="activeTab === 'empresas'"
+          v-model:search-model="empresaSearch"
+          class="administration-page__tab-panel"
+          search-placeholder="Buscar empresas"
+          add-label="Adicionar empresa"
+          :columns="empresaColumns"
+          :rows="empresaRows"
+          row-key="id_empresa"
+          empty-text="Nenhuma empresa cadastrada."
+          :loading="loading"
+          :error="loadError"
+          @add="openEmpresaDialog()"
+          @row-click="openEmpresaDetail"
+          @edit-row="handleEmpresaEditRow"
+          @delete-rows="handleEmpresaDeleteRows"
+        />
 
-        <v-window-item value="filiais">
-          <AdministrationEntityTab
-            v-model:search-model="filialSearch"
-            search-placeholder="Buscar filiais"
-            add-label="Adicionar filial"
-            :columns="filialColumns"
-            :rows="filialRows"
-            row-key="id_filial"
-            empty-text="Nenhuma filial cadastrada."
-            :loading="loading"
-            :error="loadError"
-            @add="openFilialDialog()"
-            @row-click="openFilialDialog"
-            @edit-row="handleFilialEditRow"
-            @delete-rows="handleFilialDeleteRows"
-          />
-        </v-window-item>
+        <AdministrationEntityTab
+          v-show="activeTab === 'filiais'"
+          v-model:search-model="filialSearch"
+          class="administration-page__tab-panel"
+          search-placeholder="Buscar filiais"
+          add-label="Adicionar filial"
+          :columns="filialColumns"
+          :rows="filialRows"
+          row-key="id_filial"
+          empty-text="Nenhuma filial cadastrada."
+          :loading="loading"
+          :error="loadError"
+          @add="openFilialDialog()"
+          @row-click="openFilialDialog"
+          @edit-row="handleFilialEditRow"
+          @delete-rows="handleFilialDeleteRows"
+        />
 
-        <v-window-item value="setores">
-          <AdministrationEntityTab
-            v-model:search-model="setorSearch"
-            search-placeholder="Buscar setores"
-            add-label="Adicionar setor"
-            :columns="setorColumns"
-            :rows="setorRows"
-            row-key="id_setor"
-            empty-text="Nenhum setor cadastrado."
-            :loading="loading"
-            :error="loadError"
-            @add="openSetorDialog()"
-            @row-click="openSetorDialog"
-            @edit-row="handleSetorEditRow"
-            @delete-rows="handleSetorDeleteRows"
-          />
-        </v-window-item>
+        <AdministrationEntityTab
+          v-show="activeTab === 'setores'"
+          v-model:search-model="setorSearch"
+          class="administration-page__tab-panel"
+          search-placeholder="Buscar setores"
+          add-label="Adicionar setor"
+          :columns="setorColumns"
+          :rows="setorRows"
+          row-key="id_setor"
+          empty-text="Nenhum setor cadastrado."
+          :loading="loading"
+          :error="loadError"
+          @add="openSetorDialog()"
+          @row-click="openSetorDialog"
+          @edit-row="handleSetorEditRow"
+          @delete-rows="handleSetorDeleteRows"
+        />
 
-        <v-window-item value="perfis">
-          <AdministrationEntityTab
-            v-model:search-model="perfilSearch"
-            search-placeholder="Buscar perfis"
-            add-label="Adicionar perfil"
-            :columns="perfilColumns"
-            :rows="perfilRows"
-            row-key="id_perfil"
-            empty-text="Nenhum perfil cadastrado."
-            :loading="loading"
-            :error="loadError"
-            @add="openPerfilDialog()"
-            @row-click="openPerfilDialog"
-            @edit-row="handlePerfilEditRow"
-            @delete-rows="handlePerfilDeleteRows"
-          />
-        </v-window-item>
-      </v-window>
+        <AdministrationEntityTab
+          v-show="activeTab === 'perfis'"
+          v-model:search-model="perfilSearch"
+          class="administration-page__tab-panel"
+          search-placeholder="Buscar perfis"
+          add-label="Adicionar perfil"
+          :columns="perfilColumns"
+          :rows="perfilRows"
+          row-key="id_perfil"
+          empty-text="Nenhum perfil cadastrado."
+          :loading="loading"
+          :error="loadError"
+          @add="openPerfilDialog()"
+          @row-click="openPerfilDialog"
+          @edit-row="handlePerfilEditRow"
+          @delete-rows="handlePerfilDeleteRows"
+        />
+      </div>
 
       <EmpresaDetailDialog
         v-model="empresaDetailOpen"
@@ -291,13 +291,18 @@
 
   .administration-page {
     @include content-page.content-page-shell;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
+    gap: 12px;
+
+    @media (max-width: 900px) {
+      gap: 8px;
+    }
   }
 
   .administration-page__header {
     @include content-page.content-page-header;
-    margin-bottom: var(--df-space-sm);
+    margin-bottom: 0;
+    flex-shrink: 0;
   }
 
   .administration-page__title {
@@ -309,11 +314,47 @@
   }
 
   .administration-page__tabs {
-    margin-bottom: var(--df-space-md);
+    flex: 0 0 auto;
+    margin-bottom: 0;
+    flex-shrink: 0;
     @include page-fields.page-tabs;
+
+    :deep(.v-slide-group) {
+      width: 100%;
+    }
+
+    :deep(.v-slide-group__content) {
+      display: flex;
+      width: 100%;
+    }
+
+    :deep(.v-tab) {
+      min-width: 0;
+      flex: 1 1 0;
+      max-width: none;
+      padding-inline: 8px;
+    }
+
+    :deep(.v-tab__content) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
   .administration-page__panel {
+    display: flex;
     min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  .administration-page__tab-panel {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
   }
 </style>

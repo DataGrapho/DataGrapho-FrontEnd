@@ -6,7 +6,6 @@
           <AppSidebar
             :maximized="siteSidebarMaximized"
             @toggle="toggleSiteSidebar"
-            @logout="handleLogout"
           />
         </slot>
       </aside>
@@ -34,7 +33,10 @@
         <header
           v-if="showTopbar"
           class="app-main__topbar"
-          :class="{ 'app-main__topbar--chat-mobile': route.name === 'app-chat' && isMobileViewport }"
+          :class="{
+            'app-main__topbar--chat': route.name === 'app-chat',
+            'app-main__topbar--chat-mobile': route.name === 'app-chat' && isMobileViewport,
+          }"
         >
           <button
             v-if="route.name === 'app-chat' && isMobileViewport"
@@ -61,11 +63,10 @@
 
 <script setup lang="ts">
   import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
+  import { useRoute } from 'vue-router'
   import AppSidebar from '@/shared/components/app-sidebar/AppSidebar.vue'
   import ChatSidebar from '@/features/chat/components/sidebar/ChatSidebar.vue'
   import { useAppTheme } from '@/shared/composables/useAppTheme'
-  import { clearAuthenticatedSession } from '@/features/auth/services/auth-session.service'
   import { useChatMessages } from '@/features/chat/composables/useChatMessages'
 
   const props = withDefaults(
@@ -85,7 +86,6 @@
   const isMobileChatMenuOpen = ref(false)
   const isMobileViewport = ref(window.innerWidth <= 900)
   const route = useRoute()
-  const router = useRouter()
   const {
     activeChatId,
     chats,
@@ -128,11 +128,6 @@
 
   function toggleChatSidebar () {
     chatSidebarCollapsed.value = !chatSidebarCollapsed.value
-  }
-
-  function handleLogout() {
-    clearAuthenticatedSession()
-    router.push({ name: 'login' })
   }
 
   function handleSearchChat(value: string) {
@@ -192,7 +187,7 @@
 
   .app-shell--mobile {
     display: block;
-    padding-bottom: 72px;
+    padding-bottom: 60px;
   }
 
   .app-shell--mobile .app-sidebar-wrapper,
@@ -242,12 +237,29 @@
 
   .app-main__chat-menu-trigger {
     display: none;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 8px;
+    color: rgb(var(--v-theme-on-surface));
+    background: transparent;
+    font-size: 1.25rem;
   }
 
   .app-main__topbar h1 {
     margin: 0;
   }
 
+  .app-main__topbar--chat {
+    justify-content: center;
+  }
+
+  .app-main__topbar--chat h1 {
+    width: 100%;
+    text-align: center;
+  }
 
   .app-main__content {
     display: flex;
@@ -264,8 +276,8 @@
 
   @media (max-width: 900px) {
     .app-shell--mobile .app-main {
-      height: calc(100dvh - 72px);
-      max-height: calc(100dvh - 72px);
+      height: calc(100dvh - 60px);
+      max-height: calc(100dvh - 60px);
       overflow: hidden;
     }
 
@@ -278,22 +290,27 @@
     }
 
     .app-main__topbar--chat-mobile {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 8px;
+      position: relative;
+      justify-content: flex-start;
+    }
+
+    .app-main__topbar--chat-mobile h1 {
+      position: absolute;
+      left: 50%;
+      width: auto;
+      max-width: calc(100% - 96px);
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .app-main__topbar--chat-mobile .app-main__chat-menu-trigger {
+      position: relative;
+      z-index: 1;
     }
 
     .app-main__chat-menu-trigger {
       display: inline-flex;
-      width: 36px;
-      height: 36px;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      border-radius: 8px;
-      color: rgb(var(--v-theme-on-surface));
-      background: transparent;
-      font-size: 1.25rem;
     }
 
     .app-main__topbar h1 {
@@ -301,9 +318,7 @@
     }
 
     .app-main__content {
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
     }
   }
 </style>

@@ -1,96 +1,185 @@
 <template>
   <header class="datatable-toolbar">
-    <div class="datatable-toolbar__row">
-      <Button
-        class="datatable-toolbar__btn datatable-toolbar__btn--fit"
-        color="on-surface"
-        size="md"
-        variant="outlined"
-        @click="emit('new-item')"
-      >
-        <Icon name="add-line" />
-        Adicionar novo item
-      </Button>
+    <div class="datatable-toolbar__desktop">
+      <div class="datatable-toolbar__row">
+        <Button
+          class="datatable-toolbar__btn datatable-toolbar__btn--fit"
+          color="on-surface"
+          size="md"
+          variant="outlined"
+          @click="emit('new-item')"
+        >
+          <Icon name="add-line" />
+          Adicionar novo item
+        </Button>
 
-      <Button
-        class="datatable-toolbar__btn datatable-toolbar__btn--fit"
-        size="md"
-        variant="outlined"
-        color="on-surface"
-        @click="emit('toggle-edit-mode', !editMode)"
-      >
-        <Icon :name="editMode ? 'close-line' : 'edit-box-line'" />
-        {{ editMode ? 'Sair da grade' : 'Editar em grade' }}
-      </Button>
+        <Button
+          class="datatable-toolbar__btn datatable-toolbar__btn--fit"
+          size="md"
+          variant="outlined"
+          color="on-surface"
+          @click="emit('toggle-edit-mode', !editMode)"
+        >
+          <Icon :name="editMode ? 'close-line' : 'edit-box-line'" />
+          {{ editMode ? 'Sair da grade' : 'Editar em grade' }}
+        </Button>
 
-      <Button
-        v-if="editMode"
-        class="datatable-toolbar__btn datatable-toolbar__btn--fit"
-        size="md"
-        variant="outlined"
-        color="on-surface"
-        :disabled="!hasPendingChanges"
-        @click="emit('discard')"
-      >
-        <Icon name="arrow-go-back-line" />
-        Desfazer
-      </Button>
+        <Button
+          v-if="editMode"
+          class="datatable-toolbar__btn datatable-toolbar__btn--fit"
+          size="md"
+          variant="outlined"
+          color="on-surface"
+          :disabled="!hasPendingChanges"
+          @click="emit('discard')"
+        >
+          <Icon name="arrow-go-back-line" />
+          Desfazer
+        </Button>
 
-      <v-select
-        id="datatable-columns"
-        :items="columnViewOptions"
-        class="datatable-toolbar__select"
-        density="comfortable"
-        hide-details
-        item-title="title"
-        item-value="value"
-        :model-value="columnViewId"
-        placeholder="Colunas"
-        variant="outlined"
-        :menu-props="{ contentClass: 'datatable-toolbar__menu' }"
-        @update:model-value="emit('update:columnViewId', $event)"
-      />
+        <SelectControl
+          id="datatable-columns"
+          class="datatable-toolbar__select"
+          hide-details
+          item-title="title"
+          item-value="value"
+          :items="columnViewOptions"
+          menu-class="datatable-toolbar__menu"
+          :model-value="columnViewId"
+          placeholder="Colunas"
+          variant="form"
+          @update:model-value="emit('update:columnViewId', String($event ?? ''))"
+        />
 
-      <v-select
-        id="datatable-filter"
-        :items="filterViewOptions"
-        class="datatable-toolbar__select"
-        density="comfortable"
-        hide-details
-        item-title="title"
-        item-value="value"
-        :model-value="filterViewId"
-        placeholder="Filtrar"
-        variant="outlined"
-        :menu-props="{ contentClass: 'datatable-toolbar__menu' }"
-        @update:model-value="emit('update:filterViewId', $event)"
-      />
+        <SelectControl
+          id="datatable-filter"
+          class="datatable-toolbar__select"
+          hide-details
+          item-title="title"
+          item-value="value"
+          :items="filterViewOptions"
+          menu-class="datatable-toolbar__menu"
+          :model-value="filterViewId"
+          placeholder="Filtrar"
+          variant="form"
+          @update:model-value="emit('update:filterViewId', String($event ?? ''))"
+        />
 
-      <v-select
-        v-if="hasCatalogFilter"
-        id="datatable-catalog"
-        :items="catalogoOptions"
-        class="datatable-toolbar__select datatable-toolbar__select--wide"
-        density="comfortable"
-        hide-details
-        item-title="title"
-        item-value="value"
-        :model-value="selectedCatalogoId"
-        placeholder="Catalogo"
-        variant="outlined"
-        :menu-props="{ contentClass: 'datatable-toolbar__menu' }"
-        @update:model-value="emit('update:selectedCatalogoId', $event)"
-      />
+        <SelectControl
+          v-if="hasCatalogFilter"
+          id="datatable-catalog"
+          class="datatable-toolbar__select datatable-toolbar__select--wide"
+          hide-details
+          item-title="title"
+          item-value="value"
+          :items="catalogoOptions"
+          menu-class="datatable-toolbar__menu"
+          :model-value="selectedCatalogoId"
+          placeholder="Catalogo"
+          variant="form"
+          @update:model-value="emit('update:selectedCatalogoId', $event === null || $event === '' ? null : Number($event))"
+        />
 
-      <button
-        class="datatable-toolbar__refresh"
-        :disabled="saving"
-        title="Atualizar"
-        type="button"
-        @click="emit('refresh')"
-      >
-        <Icon name="refresh-line" />
-      </button>
+        <button
+          class="datatable-toolbar__refresh"
+          :disabled="saving"
+          title="Atualizar"
+          type="button"
+          @click="emit('refresh')"
+        >
+          <Icon name="refresh-line" />
+        </button>
+      </div>
+    </div>
+
+    <div class="datatable-toolbar__mobile">
+      <div class="datatable-toolbar__mobile-actions">
+        <button
+          class="datatable-toolbar__mobile-action"
+          type="button"
+          @click="emit('new-item')"
+        >
+          <Icon name="add-line" />
+          <span>Novo</span>
+        </button>
+
+        <button
+          class="datatable-toolbar__mobile-action"
+          type="button"
+          @click="emit('toggle-edit-mode', !editMode)"
+        >
+          <Icon :name="editMode ? 'close-line' : 'edit-box-line'" />
+          <span>{{ editMode ? 'Sair' : 'Grade' }}</span>
+        </button>
+
+        <button
+          v-if="editMode"
+          class="datatable-toolbar__mobile-action"
+          :disabled="!hasPendingChanges"
+          type="button"
+          @click="emit('discard')"
+        >
+          <Icon name="arrow-go-back-line" />
+          <span>Desfazer</span>
+        </button>
+
+        <button
+          class="datatable-toolbar__mobile-action"
+          :disabled="saving"
+          type="button"
+          @click="emit('refresh')"
+        >
+          <Icon name="refresh-line" />
+          <span>Atualizar</span>
+        </button>
+      </div>
+
+      <details class="datatable-toolbar__mobile-filters">
+        <summary class="datatable-toolbar__mobile-filters-toggle">
+          <Icon name="filter-3-line" />
+          <span>Visualizacao e filtros</span>
+          <Icon class="datatable-toolbar__mobile-filters-chevron" name="arrow-down-s-line" />
+        </summary>
+
+        <div class="datatable-toolbar__mobile-filters-body">
+          <FormSelect
+            id="datatable-columns-mobile"
+            field-label="Colunas"
+            item-title="title"
+            item-value="value"
+            :items="columnViewOptions"
+            menu-class="datatable-toolbar__menu"
+            :model-value="columnViewId"
+            placeholder="Colunas"
+            @update:model-value="emit('update:columnViewId', String($event ?? ''))"
+          />
+
+          <FormSelect
+            id="datatable-filter-mobile"
+            field-label="Filtrar"
+            item-title="title"
+            item-value="value"
+            :items="filterViewOptions"
+            menu-class="datatable-toolbar__menu"
+            :model-value="filterViewId"
+            placeholder="Filtrar"
+            @update:model-value="emit('update:filterViewId', String($event ?? ''))"
+          />
+
+          <FormSelect
+            v-if="hasCatalogFilter"
+            id="datatable-catalog-mobile"
+            field-label="Catalogo"
+            item-title="title"
+            item-value="value"
+            :items="catalogoOptions"
+            menu-class="datatable-toolbar__menu"
+            :model-value="selectedCatalogoId"
+            placeholder="Catalogo"
+            @update:model-value="emit('update:selectedCatalogoId', $event === null || $event === '' ? null : Number($event))"
+          />
+        </div>
+      </details>
     </div>
 
     <InlineMessage
@@ -109,6 +198,8 @@
 
 <script setup lang="ts">
   import Button from '@/shared/components/button/Button.vue'
+  import FormSelect from '@/shared/components/form-select/FormSelect.vue'
+  import SelectControl from '@/shared/components/form-select/SelectControl.vue'
   import InlineMessage from '@/shared/components/inline-message/InlineMessage.vue'
 
   defineProps<{
@@ -138,8 +229,6 @@
 </script>
 
 <style scoped lang="scss">
-  @use '@/features/datatable/styles/datatable-field' as field;
-
   .datatable-toolbar {
     display: flex;
     width: 100%;
@@ -147,6 +236,10 @@
     flex-direction: column;
     gap: 8px;
     flex-shrink: 0;
+  }
+
+  .datatable-toolbar__mobile {
+    display: none;
   }
 
   .datatable-toolbar__row {
@@ -192,10 +285,9 @@
   }
 
   .datatable-toolbar__select {
-    @include field.datatable-toolbar-select;
     flex: 1 1 0;
     min-width: 0;
-    height: 40px;
+    align-self: center;
   }
 
   .datatable-toolbar__select--wide {
@@ -222,20 +314,111 @@
     cursor: not-allowed;
   }
 
-  @media (max-width: 900px) {
-    .datatable-toolbar__row :deep(.datatable-toolbar__btn--fit) {
-      flex: 0 0 auto;
-      width: fit-content;
+  @media (max-width: 1060px) {
+    .datatable-toolbar__desktop {
+      display: none;
+    }
+
+    .datatable-toolbar__mobile {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .datatable-toolbar__mobile-actions {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      padding: 4px;
+      border-radius: var(--df-radius-base);
+      background: rgb(var(--v-theme-surface));
+      border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+    }
+
+    .datatable-toolbar__mobile-action {
+      display: flex;
+      min-width: 0;
+      flex: 1 1 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 6px 2px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: rgb(var(--v-theme-on-surface));
+      font-family: var(--df-font-body);
+      font-size: 0.625rem;
+      line-height: 0.875rem;
+      letter-spacing: 0;
+      cursor: pointer;
+    }
+
+    .datatable-toolbar__mobile-action:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .datatable-toolbar__mobile-action :deep(i),
+    .datatable-toolbar__mobile-action :deep(svg) {
+      font-size: 1.125rem;
+      line-height: 1;
+    }
+
+    .datatable-toolbar__mobile-action span {
       max-width: 100%;
-      font-size: 13px;
+      overflow: hidden;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .datatable-toolbar__select {
-      flex: 1 1 calc(50% - 4px);
+    .datatable-toolbar__mobile-filters {
+      border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+      border-radius: var(--df-radius-base);
+      background: rgb(var(--v-theme-surface));
+      overflow: hidden;
     }
 
-    .datatable-toolbar__refresh {
-      flex: 0 0 40px;
+    .datatable-toolbar__mobile-filters-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      color: rgb(var(--v-theme-on-surface));
+      font-family: var(--df-font-body);
+      font-size: 0.8125rem;
+      line-height: 1.125rem;
+      letter-spacing: 0;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+
+    .datatable-toolbar__mobile-filters-toggle::-webkit-details-marker {
+      display: none;
+    }
+
+    .datatable-toolbar__mobile-filters-chevron {
+      margin-left: auto;
+      transition: transform 180ms ease;
+    }
+
+    .datatable-toolbar__mobile-filters[open] .datatable-toolbar__mobile-filters-chevron {
+      transform: rotate(180deg);
+    }
+
+    .datatable-toolbar__mobile-filters-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+      border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+    }
+
+    .datatable-toolbar__mobile-filters-body :deep(.form-select) {
+      width: 100%;
     }
   }
 </style>

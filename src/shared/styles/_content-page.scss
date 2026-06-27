@@ -12,7 +12,20 @@
 
   @media (max-width: 900px) {
     padding: 12px;
-    padding-bottom: 96px;
+  }
+}
+
+@mixin content-page-table-host {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+
+  :deep(.base-datatable),
+  :deep(.editable-datatable) {
+    min-height: 0;
+    flex: 1 1 auto;
   }
 }
 

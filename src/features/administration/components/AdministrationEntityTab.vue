@@ -69,7 +69,10 @@
   @use '@/shared/styles/page-vuetify-fields' as page-fields;
 
   .administration-section {
-    display: grid;
+    display: flex;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
     gap: var(--df-space-md);
   }
 
@@ -84,6 +87,11 @@
     flex: 1;
     min-width: 0;
     @include page-fields.page-search-field;
+  }
+
+  .administration-section :deep(.base-datatable) {
+    min-height: 0;
+    flex: 1 1 auto;
   }
 
   @media (max-width: 900px) {

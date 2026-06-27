@@ -52,6 +52,7 @@ describe('integracao da sidebar administrativa', () => {
 
     expect(wrapper.text()).toContain('Administracao')
     expect(wrapper.text()).toContain('Gerenciar usuarios')
+    expect(wrapper.text()).toContain('Configuração')
   })
 
   it('renderiza apenas gerenciar usuarios para staff', () => {

@@ -9,24 +9,26 @@
           </p>
         </div>
 
-        <v-text-field
-          :model-value="searchText"
-          class="datatable-page__search"
-          clearable
-          density="comfortable"
-          hide-details
-          placeholder="Buscar nesta lista"
-          prepend-inner-icon="mdi-magnify"
-          variant="outlined"
-          @update:model-value="searchText = $event ?? ''"
-        />
+        <div class="datatable-page__header-actions">
+          <v-text-field
+            :model-value="searchText"
+            class="datatable-page__search"
+            clearable
+            density="comfortable"
+            hide-details
+            placeholder="Buscar nesta lista"
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+            @update:model-value="searchText = $event ?? ''"
+          />
+        </div>
       </div>
     </header>
 
     <DataTableToolbar
       v-model:column-view-id="columnViewId"
       v-model:filter-view-id="filterViewId"
-      v-model:selected-catalogo-id="selectedCatalogoId"
+      v-model:selected-catalogo-id="toolbarSelectedCatalogoId"
       :catalogo-options="catalogoOptions"
       :column-view-options="columnViewOptions"
       :edit-mode="editMode"
@@ -167,6 +169,31 @@
     })),
   )
 
+  const toolbarSelectedCatalogoId = computed({
+    get () {
+      const id = selectedCatalogoId.value
+      if (id === null) return null
+      return catalogos.value.some(catalogo => catalogo.id_catalogo === id) ? id : null
+    },
+    set (value: number | null) {
+      selectedCatalogoId.value = value
+    },
+  })
+
+  function syncCatalogFilterSelection () {
+    if (filterViewId.value !== 'catalog') return
+
+    const catalogIds = catalogos.value.map(catalogo => catalogo.id_catalogo)
+    if (catalogIds.length === 0) {
+      selectedCatalogoId.value = null
+      return
+    }
+
+    if (!selectedCatalogoId.value || !catalogIds.includes(selectedCatalogoId.value)) {
+      selectedCatalogoId.value = catalogIds[0]
+    }
+  }
+
   const searchText = computed({
     get: () => globalSearch.value ?? '',
     set: (value: string | null) => {
@@ -228,6 +255,7 @@
 
       deparaItems.value = deparaResponse.data
       catalogos.value = catalogoResponse.data
+      syncCatalogFilterSelection()
     } catch (error) {
       deparaItems.value = []
       catalogos.value = []
@@ -380,6 +408,10 @@
     },
   )
 
+  watch([filterViewId, catalogos], () => {
+    syncCatalogFilterSelection()
+  })
+
   watch(globalSearch, () => {
     if (searchDebounce) clearTimeout(searchDebounce)
     searchDebounce = setTimeout(() => {
@@ -394,6 +426,7 @@
 
 <style scoped lang="scss">
   @use '@/shared/styles/content-page' as content-page;
+  @use '@/shared/styles/page-vuetify-fields' as page-fields;
 
   .datatable-page {
     @include content-page.content-page-shell;
@@ -401,37 +434,17 @@
     gap: 12px;
 
     @media (max-width: 900px) {
-      padding-inline: 0;
-      padding-top: 8px;
-      padding-bottom: 96px;
       gap: 8px;
     }
   }
 
+  .datatable-page__table {
+    @include content-page.content-page-table-host;
+  }
+
   .datatable-page__header,
   .datatable-page :deep(.datatable-toolbar) {
-    @media (max-width: 900px) {
-      padding-inline: 12px;
-    }
-  }
-
-  .datatable-page__table {
-    display: flex;
-    min-height: 0;
-    flex: 1 1 auto;
-    flex-direction: column;
-
-    @media (max-width: 900px) {
-      min-height: 280px;
-    }
-  }
-
-  .datatable-page__table :deep(.base-datatable),
-  .datatable-page__table :deep(.editable-datatable) {
-    @media (max-width: 900px) {
-      border-inline: 0;
-      border-radius: 0;
-    }
+    flex-shrink: 0;
   }
 
   .datatable-page__header {
@@ -452,23 +465,18 @@
     flex: 1 1 auto;
   }
 
+  .datatable-page__header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+    width: min(100%, 520px);
+  }
+
   .datatable-page__search {
-    width: min(100%, 320px);
-    flex: 0 1 320px;
-    margin-top: 4px;
-  }
-
-  .datatable-page__search :deep(.v-field) {
-    border-radius: var(--df-radius-base);
-    background: rgb(var(--v-theme-surface));
-  }
-
-  .datatable-page__search :deep(.v-field__input),
-  .datatable-page__search :deep(input::placeholder) {
-    font-family: var(--df-font-body);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    letter-spacing: 0;
+    flex: 1;
+    min-width: 0;
+    @include page-fields.page-search-field;
   }
 
   @media (max-width: 760px) {
@@ -477,10 +485,9 @@
       align-items: stretch;
     }
 
-    .datatable-page__search {
+    .datatable-page__header-actions {
+      margin-left: 0;
       width: 100%;
-      flex-basis: auto;
-      margin-top: 0;
     }
   }
 

@@ -65,6 +65,7 @@ export default defineConfig({
         './src/features/datatable/pages/DeparaDatatablePage.vue',
         './src/features/manage-users/pages/ManageUsersPage.vue',
         './src/features/administration/pages/AdministrationPage.vue',
+        './src/features/settings/pages/SettingsPage.vue',
       ],
     },
   },

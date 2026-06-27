@@ -56,13 +56,18 @@
     </nav>
 
     <nav class="app-sidebar__bottom-nav" :style="{ gridTemplateColumns: bottomNavColumns }">
+      <div
+        aria-hidden="true"
+        class="app-sidebar__bottom-indicator"
+        :style="bottomNavIndicatorStyle"
+      />
       <RouterLink
         class="app-sidebar__bottom-link"
-        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-chat' }"
-        to="/app"
+        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-settings' }"
+        to="/app/configuracoes"
       >
-        <Icon name="chat-ai-4-line" />
-        <span>Chatbot IA</span>
+        <Icon name="settings-3-line" />
+        <span>Configuração</span>
       </RouterLink>
       <RouterLink
         class="app-sidebar__bottom-link"
@@ -73,13 +78,12 @@
         <span>De/Para</span>
       </RouterLink>
       <RouterLink
-        v-if="canAccessAdministration"
         class="app-sidebar__bottom-link"
-        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-administration' }"
-        to="/app/administracao"
+        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-chat' }"
+        to="/app"
       >
-        <Icon name="building-line" />
-        <span>Administracao</span>
+        <Icon name="chat-ai-4-line" />
+        <span>Chatbot IA</span>
       </RouterLink>
       <RouterLink
         v-if="canManageUsers"
@@ -90,6 +94,15 @@
         <Icon name="shield-user-line" />
         <span>Usuarios</span>
       </RouterLink>
+      <RouterLink
+        v-if="canAccessAdministration"
+        class="app-sidebar__bottom-link"
+        :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-administration' }"
+        to="/app/administracao"
+      >
+        <Icon name="building-line" />
+        <span>Administracao</span>
+      </RouterLink>
     </nav>
 
     <div class="app-sidebar__footer">
@@ -99,19 +112,18 @@
         :title="isDarkTheme ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
         @click="toggleTheme"
       />
-      <AppSidebarActionButton label="Sair" title="Sair" @click="$emit('logout')">
-        <template #icon>
-          <v-icon class="app-sidebar__icon" size="20">
-            <x-ri-logout-box-r-line />
-          </v-icon>
-        </template>
-      </AppSidebarActionButton>
+      <AppSidebarNavLink
+        :active="route.name === 'app-settings'"
+        icon="settings-3-line"
+        label="Configuração"
+        to="/app/configuracoes"
+      />
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
-  import { computed, defineComponent, h } from 'vue'
+  import { computed } from 'vue'
   import { useRoute } from 'vue-router'
   import AppSidebarActionButton from './AppSidebarActionButton.vue'
   import AppSidebarNavLink from './AppSidebarNavLink.vue'
@@ -122,20 +134,12 @@
   import { getAuthenticatedSession } from '@/features/auth/services/auth-session.service'
   import { useAppTheme } from '@/shared/composables/useAppTheme'
 
-  const XRiLogoutBoxRLine = defineComponent({
-    name: 'XRiLogoutBoxRLine',
-    setup () {
-      return () => h('i', { class: 'ri-logout-box-r-line', 'aria-hidden': 'true' })
-    },
-  })
-
   defineProps<{
     maximized: boolean
   }>()
 
   defineEmits<{
     toggle: []
-    logout: []
   }>()
 
   const { isDarkTheme, toggleTheme } = useAppTheme()
@@ -145,7 +149,7 @@
   const canManageUsers = hasUserManagementAccess(session)
 
   const bottomNavItemCount = computed(() => {
-    let count = 2
+    let count = 3
     if (canAccessAdministration) count += 1
     if (canManageUsers) count += 1
     return count
@@ -153,6 +157,25 @@
 
   const bottomNavColumns = computed(() => `repeat(${bottomNavItemCount.value}, 1fr)`)
 
+  const activeBottomNavIndex = computed(() => {
+    const items: string[] = ['app-settings', 'app-de-para', 'app-chat']
+    if (canManageUsers) items.push('app-manage-users')
+    if (canAccessAdministration) items.push('app-administration')
+
+    const currentRoute = typeof route.name === 'string' ? route.name : ''
+    const index = items.indexOf(currentRoute)
+    return index >= 0 ? index : 0
+  })
+
+  const bottomNavIndicatorStyle = computed(() => {
+    const count = bottomNavItemCount.value
+    const slotWidth = 100 / count
+
+    return {
+      width: `${slotWidth}%`,
+      transform: `translateX(${activeBottomNavIndex.value * 100}%)`,
+    }
+  })
 </script>
 
 <style scoped>
@@ -283,9 +306,10 @@
       left: 0;
       z-index: 60;
       height: auto;
-      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-      border-top: 1px solid rgb(var(--v-theme-grey-lighten-3));
+      padding: 0 4px calc(2px + env(safe-area-inset-bottom));
+      border-top: 0;
       border-right: 0;
+      background: rgb(var(--v-theme-surface));
     }
 
     .app-sidebar__head,
@@ -295,29 +319,78 @@
     }
 
     .app-sidebar__bottom-nav {
+      position: relative;
       display: grid;
-      gap: 8px;
+      gap: 0;
+      padding: 0;
+      background: transparent;
+    }
+
+    .app-sidebar__bottom-nav::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 1px;
+      background: rgb(var(--v-theme-grey-lighten-3));
+      pointer-events: none;
+    }
+
+    .app-sidebar__bottom-indicator {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      height: 2px;
+      background: rgb(var(--v-theme-primary));
+      transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
     }
 
     .app-sidebar__bottom-link {
-      display: inline-flex;
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 10px;
-      border-radius: 8px;
-      color: rgb(var(--v-theme-on-surface));
+      gap: 4px;
+      padding: 8px 4px;
+      border-radius: 0;
+      color: rgba(var(--v-theme-on-surface), 0.55);
       text-decoration: none;
       font-family: var(--df-font-body);
-      font-size: 0.875rem;
-      line-height: 1.25rem;
+      font-size: 0.6875rem;
+      line-height: 0.875rem;
       letter-spacing: 0;
-      background: rgb(var(--v-theme-surface-variant));
+      background: transparent;
+      transition: color 160ms ease;
+    }
+
+    .app-sidebar__bottom-link :deep(i),
+    .app-sidebar__bottom-link :deep(svg) {
+      font-size: 1.375rem;
+      line-height: 1;
+      transition: color 160ms ease;
+    }
+
+    .app-sidebar__bottom-link span {
+      max-width: 100%;
+      overflow: hidden;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
     }
 
     .app-sidebar__bottom-link--active {
-      background: rgba(var(--v-theme-primary), 0.16);
       color: rgb(var(--v-theme-primary));
+      background: transparent;
+    }
+
+    .app-sidebar__bottom-link--active span {
+      font-weight: 600;
     }
   }
 </style>

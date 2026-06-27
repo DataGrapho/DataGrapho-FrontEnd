@@ -65,9 +65,14 @@
             v-else
             :key="String(row[rowKey])"
             class="base-datatable__row"
-            :class="{ 'base-datatable__row--selected': isSelected(row) }"
+            :class="{
+              'base-datatable__row--clickable': clickableRows,
+              'base-datatable__row--selectable': selectable,
+              'base-datatable__row--selected': selectable && isSelected(row),
+            }"
+            @click="handleRowClick(row, $event)"
             @contextmenu="handleRowContextMenu(row, $event)"
-            @mousedown="handleRowPointerDown(row, $event)"
+            @mousedown="handleRowMouseDown(row, $event)"
           >
             <td v-if="selectable" class="base-datatable__cell base-datatable__cell--select">
               <v-checkbox
@@ -185,16 +190,19 @@
     error?: string
     emptyText?: string
     selectable?: boolean
+    clickableRows?: boolean
   }>(), {
     rowKey: 'id',
     loading: false,
     error: '',
     emptyText: 'Nenhum registro encontrado.',
     selectable: true,
+    clickableRows: false,
   })
 
   const emit = defineEmits<{
     'selection-change': [rows: DataTableRow[]]
+    'row-click': [row: DataTableRow]
     'edit-row': [row: DataTableRow]
     'delete-rows': [rows: DataTableRow[]]
   }>()
@@ -284,8 +292,21 @@
   const contextMenuShowEdit = computed(() => selectedCount.value <= 1)
 
   function handleRowContextMenu (row: DataTableRow, event: MouseEvent) {
-    ensureRowSelected(row)
+    if (props.selectable) {
+      ensureRowSelected(row)
+    }
     openContextMenu(event, row)
+  }
+
+  function handleRowMouseDown (row: DataTableRow, event: MouseEvent) {
+    if (!props.selectable) return
+    handleRowPointerDown(row, event)
+  }
+
+  function handleRowClick (row: DataTableRow, event: MouseEvent) {
+    if (!props.clickableRows) return
+    if (isInteractiveTarget(event.target)) return
+    emit('row-click', row)
   }
 
   function handleContextEdit () {
@@ -295,13 +316,20 @@
   }
 
   function handleContextDelete () {
-    const rows = selectedRows.value.length > 0
+    const rows = props.selectable && selectedRows.value.length > 0
       ? [...selectedRows.value]
       : contextRow.value
         ? [contextRow.value]
         : []
     closeContextMenu()
     if (rows.length > 0) emit('delete-rows', rows)
+  }
+
+  function isInteractiveTarget (target: EventTarget | null) {
+    if (!(target instanceof HTMLElement)) return false
+    return Boolean(target.closest(
+      'input, textarea, select, button, a, [contenteditable="true"], .v-field, .v-selection-control',
+    ))
   }
 
   function formatCell (columnKey: string, value: unknown) {
@@ -491,6 +519,11 @@
   }
 
   .base-datatable__row {
+    cursor: default;
+  }
+
+  .base-datatable__row--clickable,
+  .base-datatable__row--selectable {
     cursor: pointer;
   }
 

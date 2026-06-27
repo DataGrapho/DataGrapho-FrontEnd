@@ -24,7 +24,7 @@
     align-items: center;
     padding-top: 0;
     padding-bottom: 0;
-    padding-inline: 6px;
+    padding-inline: 8px;
     font-family: var(--df-font-body);
     font-size: 0.8125rem;
     line-height: 1.125rem;
@@ -161,16 +161,31 @@
 }
 
 @mixin datatable-toolbar-select {
+  --v-input-control-height: 40px;
+  --v-field-padding-top: 0px;
+  --v-field-padding-bottom: 0px;
+  --v-input-padding-top: 0px;
+  --v-field-input-padding-top: 0px;
+  --v-field-input-padding-bottom: 0px;
   --v-field-border-width: 1px;
   min-width: 0;
 
   :deep(.v-field) {
     border-radius: var(--df-radius-base);
     background: rgb(var(--v-theme-surface));
+    min-height: 40px;
+  }
+
+  :deep(.v-field--variant-outlined) {
+    --v-field-padding-bottom: 0px;
   }
 
   :deep(.v-field__outline) {
     color: rgba(var(--v-theme-on-surface), 0.16);
+  }
+
+  :deep(.v-field--focused .v-field__outline) {
+    color: rgb(var(--v-theme-primary));
   }
 
   :deep(.v-field__field) {
@@ -179,8 +194,8 @@
 
   :deep(.v-field__input) {
     display: flex;
-    min-height: 40px;
     align-items: center;
+    min-height: 40px;
     padding-top: 0;
     padding-bottom: 0;
     padding-inline: 12px;
@@ -190,14 +205,34 @@
     letter-spacing: 0;
   }
 
+  :deep(.v-field__input > input) {
+    align-self: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  :deep(.v-field__input > input::placeholder) {
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0;
+    opacity: var(--v-disabled-opacity, 0.38);
+  }
+
   :deep(.v-select__selection) {
     display: flex;
     align-items: center;
     margin-inline: 0;
+    min-height: 1.25rem;
   }
 
-  :deep(.v-select__selection-text),
-  :deep(input::placeholder) {
+  :deep(.v-select__selection-text) {
     font-family: var(--df-font-body);
     font-size: 0.875rem;
     line-height: 1.25rem;

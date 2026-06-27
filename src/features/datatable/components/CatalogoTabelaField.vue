@@ -16,25 +16,23 @@
       item-value="value"
       :items="selectItems"
       :model-value="selectedCatalogoValue"
-      placeholder="Catalogo / Tabela"
+      placeholder="Selecione"
       @update:model-value="handleSelect"
     />
 
-    <v-select
+    <SelectControl
       v-else-if="!creatingNew"
       :id="selectId"
       :error="fieldInvalid"
       :error-messages="error"
-      class="catalogo-tabela-field__select"
-      density="compact"
       hide-details
       item-title="title"
       item-value="value"
       :items="selectItems"
+      menu-class="catalogo-tabela-field__menu"
       :model-value="selectedCatalogoValue"
       placeholder="Selecione"
-      variant="outlined"
-      :menu-props="{ contentClass: 'catalogo-tabela-field__menu' }"
+      variant="inline"
       @update:model-value="handleSelect"
     />
 
@@ -108,6 +106,7 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
   import FormSelect from '@/shared/components/form-select/FormSelect.vue'
+  import SelectControl from '@/shared/components/form-select/SelectControl.vue'
   import type { CatalogoDeparaListItem } from '@/features/datatable/types/depara.types'
 
   const CREATE_VALUE = '__create__'
@@ -177,6 +176,7 @@
         newTabelaName.value = props.newCatalogoTabela
         return
       }
+
       if (!props.catalogoId && props.catalogoTabela && !selectItems.value.some(item => item.title === props.catalogoTabela)) {
         creatingNew.value = true
         newTabelaName.value = props.catalogoTabela
@@ -244,7 +244,6 @@
     gap: 0;
   }
 
-  .catalogo-tabela-field__select,
   .catalogo-tabela-field__input {
     @include field.datatable-inline-field;
   }
