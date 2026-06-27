@@ -106,6 +106,11 @@ async function startNewChat () {
   syncSessionState()
 }
 
+async function renameChatById(chatId: string, title: string) {
+  await renameChat(chatId, title)
+  await refreshChats()
+}
+
 async function renameActiveChat (title: string) {
   if (!activeChatId.value) return
   await renameChat(activeChatId.value, title)
@@ -152,6 +157,7 @@ const chatStore = {
   refreshChats,
   removeChat,
   renameActiveChat,
+  renameChatById,
   searchTerm,
   sessionState,
   sessionId,
