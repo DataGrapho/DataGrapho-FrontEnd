@@ -48,7 +48,6 @@
           <h1 class="text-label-large">
             {{ pageTitle }}
           </h1>
-          <ActionMenu :items="topbarActions" />
         </header>
 
         <section class="app-main__content">
@@ -64,7 +63,6 @@
   import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import AppSidebar from '@/shared/components/app-sidebar/AppSidebar.vue'
-  import ActionMenu, { type ActionMenuItem } from '@/shared/components/action-menu/ActionMenu.vue'
   import ChatSidebar from '@/features/chat/components/sidebar/ChatSidebar.vue'
   import { useAppTheme } from '@/shared/composables/useAppTheme'
   import { clearAuthenticatedSession } from '@/features/auth/services/auth-session.service'
@@ -86,13 +84,19 @@
   const { initTheme } = useAppTheme()
   const isMobileChatMenuOpen = ref(false)
   const isMobileViewport = ref(window.innerWidth <= 900)
-  const topbarActions: ActionMenuItem[] = [
-    { label: 'Renomear', value: 'rename', icon: 'mdi-pencil-outline' },
-    { label: 'Excluir', value: 'delete', icon: 'mdi-delete-outline' },
-  ]
   const route = useRoute()
   const router = useRouter()
-  const { activeChatId, chats, refreshChats, removeChat, searchTerm, setActiveChat, setSearchTerm, startNewChat } = useChatMessages()
+  const {
+    activeChatId,
+    chats,
+    refreshChats,
+    removeChat,
+    renameChatById,
+    searchTerm,
+    setActiveChat,
+    setSearchTerm,
+    startNewChat,
+  } = useChatMessages()
   const sidebarChats = computed(() => chats.value.map((chat) => ({ id: chat.id, title: chat.title })))
   const pageTitle = computed(() => typeof route.meta.title === 'string' ? route.meta.title : 'DataGrapho AI')
   const showTopbar = computed(() => route.meta.hideTopbar !== true)
@@ -106,7 +110,7 @@
     const columns = []
 
     if (props.showAppSidebar) {
-      columns.push(`${siteSidebarMaximized.value ? 188 : 61}px`)
+      columns.push(`var(${siteSidebarMaximized.value ? '--df-app-sidebar-width' : '--df-app-sidebar-collapsed-width'})`)
     }
 
     if (shouldShowChatSidebar.value) {
@@ -145,8 +149,11 @@
     void startNewChat()
   }
 
-  function handleRenameChat() {
-    
+  function handleRenameChat(chatId: string) {
+    const currentTitle = chats.value.find((chat) => chat.id === chatId)?.title ?? ''
+    const title = window.prompt('Renomear chat', currentTitle)
+    if (!title?.trim()) return
+    void renameChatById(chatId, title.trim())
   }
 
   function handleDeleteChat(chatId: string) {
