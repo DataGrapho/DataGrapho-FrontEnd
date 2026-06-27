@@ -53,7 +53,7 @@
       :items="roleOptions"
       placeholder="Selecione o tipo"
       :disabled="roleOptions.length <= 1"
-      @update:model-value="updateField('roleType', $event)"
+      @update:model-value="updateField('roleType', $event as ManageUsersRoleType)"
     />
   </div>
 </template>

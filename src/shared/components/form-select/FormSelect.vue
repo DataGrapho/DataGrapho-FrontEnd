@@ -41,7 +41,7 @@
   const props = withDefaults(defineProps<{
     id?: string
     modelValue?: unknown
-    items: unknown[]
+    items: readonly unknown[]
     itemTitle?: string
     itemValue?: string
     placeholder?: string
