@@ -46,21 +46,25 @@ export function redirectToLogin() {
 }
 
 async function requestTokenRefresh(refreshToken: string) {
-  const response = await fetch(buildApiUrl(REFRESH_ENDPOINT), {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ refresh: refreshToken }),
-  })
+  try {
+    const response = await fetch(buildApiUrl(REFRESH_ENDPOINT), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh: refreshToken }),
+    })
 
-  if (!response.ok) return null
+    if (!response.ok) return null
 
-  const body = await response.json() as RefreshResponse
-  if (!body?.access) return null
+    const body = await response.json() as RefreshResponse
+    if (!body?.access) return null
 
-  return body
+    return body
+  } catch {
+    return null
+  }
 }
 
 function accessTokenNeedsRefresh(accessToken: string | undefined, now = Date.now()) {
@@ -93,20 +97,25 @@ async function refreshAccessTokenInternal() {
 }
 
 export async function ensureValidAccessToken() {
-  const session = getAuthenticatedSession()
-  if (!session) return null
+  try {
+    const session = getAuthenticatedSession()
+    if (!session) return null
 
-  if (!accessTokenNeedsRefresh(session.accessToken)) {
-    return session.accessToken
+    if (!accessTokenNeedsRefresh(session.accessToken)) {
+      return session.accessToken
+    }
+
+    if (!refreshPromise) {
+      refreshPromise = refreshAccessTokenInternal().finally(() => {
+        refreshPromise = null
+      })
+    }
+
+    return await refreshPromise
+  } catch {
+    redirectToLogin()
+    return null
   }
-
-  if (!refreshPromise) {
-    refreshPromise = refreshAccessTokenInternal().finally(() => {
-      refreshPromise = null
-    })
-  }
-
-  return refreshPromise
 }
 
 export async function retryRequestAfterUnauthorized<TResponse>(

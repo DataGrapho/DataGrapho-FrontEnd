@@ -91,13 +91,13 @@
   import FormSelect from '@/shared/components/form-select/FormSelect.vue'
   import InlineMessage from '@/shared/components/inline-message/InlineMessage.vue'
   import Input from '@/shared/components/input/Input.vue'
+  import { STATUS_OPTIONS } from '@/shared/constants/status-options'
   import { createCatalogoDepara } from '@/features/datatable/services/catalogo-depara.service'
   import { createDepara, updateDepara } from '@/features/datatable/services/depara.service'
   import type { CatalogoDeparaListItem } from '@/features/datatable/types/depara.types'
   import type { DeparaDialogItem } from '@/features/datatable/types/depara-dialog.types'
   import { extractApiErrorMessage } from '@/features/datatable/utils/depara-api-errors'
   import { ApiError } from '@/shared/services/http'
-  import { STATUS_OPTIONS } from '@/shared/constants/status-options'
 
   const props = defineProps<{
     modelValue: boolean
@@ -275,7 +275,6 @@
 
 <style scoped lang="scss">
   @use '@/features/datatable/styles/datatable-scroll' as scroll;
-  @use '@/shared/styles/page-vuetify-fields' as page-fields;
 
   .depara-item-dialog {
     display: flex;
@@ -296,7 +295,6 @@
     gap: 12px;
     overflow-y: auto;
     @include scroll.datatable-custom-scrollbar;
-    @include page-fields.page-form-field;
   }
 
   .depara-item-dialog__actions {
@@ -305,6 +303,18 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     padding: 12px 16px 16px;
+  }
+
+  .depara-item-dialog__content :deep(.input .v-field) {
+    min-height: 40px;
+  }
+
+  .depara-item-dialog__content :deep(.input .v-field__input) {
+    display: flex;
+    min-height: 40px;
+    align-items: center;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
   .depara-item-dialog__actions :deep(.button) {

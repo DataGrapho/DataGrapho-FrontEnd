@@ -65,13 +65,9 @@
             v-else
             :key="String(row[rowKey])"
             class="base-datatable__row"
-            :class="{
-              'base-datatable__row--selected': isSelected(row),
-              'base-datatable__row--clickable': clickableRows,
-            }"
+            :class="{ 'base-datatable__row--selected': isSelected(row) }"
             @contextmenu="handleRowContextMenu(row, $event)"
-            @mousedown="selectable ? handleRowPointerDown(row, $event) : undefined"
-            @click="handleRowClick(row, $event)"
+            @mousedown="handleRowPointerDown(row, $event)"
           >
             <td v-if="selectable" class="base-datatable__cell base-datatable__cell--select">
               <v-checkbox
@@ -104,7 +100,7 @@
     <footer class="base-datatable__footer">
       <DataTableFooterMeta
         :range-text="visibleRangeText"
-        :selected-count="selectable ? selectedCount : 0"
+        :selected-count="selectedCount"
       />
 
       <div class="base-datatable__pagination">
@@ -189,20 +185,17 @@
     error?: string
     emptyText?: string
     selectable?: boolean
-    clickableRows?: boolean
   }>(), {
     rowKey: 'id',
     loading: false,
     error: '',
     emptyText: 'Nenhum registro encontrado.',
     selectable: true,
-    clickableRows: false,
   })
 
   const emit = defineEmits<{
     'selection-change': [rows: DataTableRow[]]
     'edit-row': [row: DataTableRow]
-    'row-click': [row: DataTableRow]
     'delete-rows': [rows: DataTableRow[]]
   }>()
 
@@ -288,47 +281,25 @@
 
   const { menu: contextMenu, contextRow, openContextMenu, closeContextMenu } = useDataTableContextMenu<DataTableRow>()
 
-  const contextMenuShowEdit = computed(() => (
-    props.selectable ? selectedCount.value <= 1 : Boolean(contextRow.value)
-  ))
+  const contextMenuShowEdit = computed(() => selectedCount.value <= 1)
 
   function handleRowContextMenu (row: DataTableRow, event: MouseEvent) {
-    if (props.selectable) {
-      ensureRowSelected(row)
-    }
+    ensureRowSelected(row)
     openContextMenu(event, row)
   }
 
-  function isInteractiveTarget (target: EventTarget | null) {
-    if (!(target instanceof HTMLElement)) return false
-    return Boolean(target.closest(
-      'input, textarea, select, button, a, [contenteditable="true"], .v-field, .v-selection-control',
-    ))
-  }
-
-  function handleRowClick (row: DataTableRow, event: MouseEvent) {
-    if (!props.clickableRows) return
-    if (event.ctrlKey || event.metaKey || event.shiftKey) return
-    if (isInteractiveTarget(event.target)) return
-    emit('row-click', row)
-  }
-
   function handleContextEdit () {
-    const row = props.selectable
-      ? (selectedRows.value[0] ?? contextRow.value)
-      : contextRow.value
+    const row = selectedRows.value[0] ?? contextRow.value
     closeContextMenu()
     if (row) emit('edit-row', row)
   }
 
   function handleContextDelete () {
-    const rows = props.selectable
-      ? (selectedRows.value.length > 0
-        ? [...selectedRows.value]
-        : contextRow.value
-          ? [contextRow.value]
-          : [])
-      : (contextRow.value ? [contextRow.value] : [])
+    const rows = selectedRows.value.length > 0
+      ? [...selectedRows.value]
+      : contextRow.value
+        ? [contextRow.value]
+        : []
     closeContextMenu()
     if (rows.length > 0) emit('delete-rows', rows)
   }

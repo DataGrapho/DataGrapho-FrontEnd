@@ -91,7 +91,7 @@ describe('pagina de login', () => {
 
   it('persiste sessao e redireciona para rota protegida no sucesso', async () => {
     mockRoute.query = {
-      redirect: '/app/datatable',
+      redirect: '/app/de-para',
     }
     loginMock.mockResolvedValueOnce({
       access: 'token',
@@ -121,6 +121,6 @@ describe('pagina de login', () => {
       'login_sucesso',
       expect.objectContaining({ accountId: '1' }),
     )
-    expect(mockRouter.push).toHaveBeenCalledWith('/app/datatable')
+    expect(mockRouter.push).toHaveBeenCalledWith('/app/de-para')
   })
 })
