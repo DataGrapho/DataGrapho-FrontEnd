@@ -27,9 +27,9 @@
       :empty-text="emptyText"
       :selectable="false"
       clickable-rows
-      @row-click="(row) => emit('row-click', row)"
-      @edit-row="(row) => emit('edit-row', row)"
-      @delete-rows="(rows) => emit('delete-rows', rows)"
+      @row-click="(row: DataTableRow) => emit('row-click', row)"
+      @edit-row="(row: DataTableRow) => emit('edit-row', row)"
+      @delete-rows="(rows: DataTableRow[]) => emit('delete-rows', rows)"
     >
       <template #cell-ativo="{ value }">
         <DataTableStatusChip :active="Boolean(value)" />

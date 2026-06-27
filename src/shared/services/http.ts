@@ -37,9 +37,21 @@ async function executeFetch(
 }
 
 async function parseResponse(response: Response) {
+  if (response.status === 204 || response.status === 205) {
+    return undefined
+  }
+
   const contentType = response.headers.get('content-type') ?? ''
-  const body = contentType.includes('application/json') ? await response.json() : undefined
-  return body
+  if (!contentType.includes('application/json')) {
+    return undefined
+  }
+
+  const text = await response.text()
+  if (!text.trim()) {
+    return undefined
+  }
+
+  return JSON.parse(text) as unknown
 }
 
 export async function requestJson<TResponse> (
@@ -47,11 +59,19 @@ export async function requestJson<TResponse> (
   options: RequestInit & { query?: Record<string, QueryValue> } = {},
 ) {
   let response = await executeFetch(path, options)
+
+  if (response.status === 204 || response.status === 205) {
+    return { success: true } as TResponse
+  }
+
   let body = await parseResponse(response)
 
   if (response.status === 401) {
     const retriedBody = await retryRequestAfterUnauthorized(path, options, async (retryPath, retryOptions) => {
       const retryResponse = await executeFetch(retryPath, retryOptions)
+      if (retryResponse.status === 204 || retryResponse.status === 205) {
+        return { success: true } as TResponse
+      }
       if (!retryResponse.ok) return null
 
       return parseResponse(retryResponse) as TResponse

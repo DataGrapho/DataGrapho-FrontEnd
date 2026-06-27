@@ -12,7 +12,7 @@
       </slot>
     </template>
 
-    <v-list class="action-menu" density="compact" min-width="160">
+    <v-list class="action-menu" density="compact" min-width="160" slim>
       <v-list-item
         v-for="item in items"
         :key="item.value"
@@ -20,7 +20,7 @@
         @click="emit('select', item.value)"
       >
         <template v-if="item.icon" #prepend>
-          <v-icon :icon="item.icon" size="18" />
+          <v-icon :icon="item.icon" size="16" />
         </template>
       </v-list-item>
     </v-list>
@@ -55,6 +55,13 @@
   }
 
   .action-menu .v-list-item__prepend {
-    margin-inline-end: 8px;
+    width: auto;
+    min-width: 0;
+    margin-inline-end: 6px;
+  }
+
+  .action-menu .v-list-item__prepend > .v-icon {
+    margin-inline-end: 0;
+    opacity: 0.9;
   }
 </style>

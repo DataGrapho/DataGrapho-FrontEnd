@@ -75,6 +75,13 @@
     padding-inline: var(--df-space-md);
   }
 
+  .button :deep(.v-btn__content) {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0;
+  }
+
   .button--filled.button--primary {
     background: var(--df-gradient-brand-primary-secondary);
     color: rgb(var(--v-theme-on-primary));
