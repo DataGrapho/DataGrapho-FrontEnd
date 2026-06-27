@@ -49,9 +49,20 @@ export type AuthUser = {
   id_usuario: number
   nome?: string
   email: string
+  cpf?: string
   is_active?: boolean
   is_staff?: boolean
   is_superuser?: boolean
+}
+
+export type ChangePasswordPayload = {
+  currentPassword: string
+  password: string
+  confirmPassword: string
+}
+
+export type AuthMeResponse = AuthUser & {
+  acessos: AuthUserAccess[]
 }
 
 export type LoginResponse = {

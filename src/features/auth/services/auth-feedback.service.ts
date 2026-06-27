@@ -27,6 +27,25 @@ export function getPasswordResetErrorMessage(error: unknown) {
   return GENERIC_AUTH_ERROR_MESSAGE
 }
 
+export function getChangePasswordErrorMessage(error: unknown) {
+  if (error instanceof AuthRequestError && error.status === 400) {
+    const details = error.details as Record<string, string[] | string> | undefined
+    const currentPasswordError = details?.current_password
+    if (Array.isArray(currentPasswordError) && currentPasswordError[0]) {
+      return currentPasswordError[0]
+    }
+    if (typeof currentPasswordError === 'string') {
+      return currentPasswordError
+    }
+    const confirmPasswordError = details?.confirmPassword
+    if (Array.isArray(confirmPasswordError) && confirmPasswordError[0]) {
+      return confirmPasswordError[0]
+    }
+  }
+
+  return GENERIC_AUTH_ERROR_MESSAGE
+}
+
 export function getPasswordPolicyMessage(password: string) {
   if (password.length < 8) {
     return 'A senha precisa ter pelo menos 8 caracteres.'

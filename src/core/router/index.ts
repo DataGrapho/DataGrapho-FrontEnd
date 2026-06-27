@@ -134,6 +134,15 @@ const router = createRouter({
           component: () => import('@/features/manage-users/pages/ManageUsersPage.vue'),
         },
         {
+          path: 'configuracoes',
+          name: 'app-settings',
+          meta: {
+            hideTopbar: true,
+            title: 'Configuração',
+          },
+          component: () => import('@/features/settings/pages/SettingsPage.vue'),
+        },
+        {
           path: 'admin-users',
           redirect: { name: 'app-manage-users' },
         },
