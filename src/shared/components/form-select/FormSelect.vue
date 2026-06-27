@@ -11,12 +11,10 @@
       {{ fieldLabel }}
     </label>
 
-    <v-select
+    <SelectControl
       :id="id"
-      :model-value="modelValue"
       class="form-select__control"
       :clearable="clearable"
-      density="compact"
       :disabled="disabled"
       :error="error"
       :error-messages="errorMessages"
@@ -24,10 +22,11 @@
       :item-title="itemTitle"
       :item-value="itemValue"
       :items="items"
+      :menu-class="menuClass"
+      :menu-props="menuProps"
+      :model-value="modelValue"
       :placeholder="resolvedPlaceholder"
-      single-line
-      variant="outlined"
-      :menu-props="resolvedMenuProps"
+      variant="form"
       @update:model-value="emit('update:modelValue', $event)"
     />
   </div>
@@ -35,6 +34,7 @@
 
 <script setup lang="ts">
   import { computed } from 'vue'
+  import SelectControl from '@/shared/components/form-select/SelectControl.vue'
 
   defineOptions({ inheritAttrs: false })
 
@@ -71,11 +71,6 @@
     'update:modelValue': [value: unknown]
   }>()
 
-  const resolvedMenuProps = computed(() => ({
-    contentClass: props.menuClass,
-    ...props.menuProps,
-  }))
-
   const resolvedPlaceholder = computed(() => {
     if (!props.placeholder) return ''
     if (!props.fieldLabel) return props.placeholder
@@ -90,7 +85,6 @@
 
   .form-select {
     min-width: 0;
-    @include form-control.form-vuetify-control;
   }
 
   .form-select--labeled {
@@ -104,7 +98,8 @@
 </style>
 
 <style>
-  .form-select__menu .v-list-item-title {
+  .form-select__menu .v-list-item-title,
+  .select-control__menu .v-list-item-title {
     font-family: var(--df-font-body);
     font-size: 0.875rem;
     line-height: 1.25rem;

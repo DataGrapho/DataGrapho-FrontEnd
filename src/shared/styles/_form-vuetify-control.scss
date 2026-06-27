@@ -56,7 +56,7 @@
     letter-spacing: 0;
   }
 
-  :deep(.v-field__input > input[readonly]) {
+  :deep(.v-text-field .v-field__input > input[readonly]) {
     top: 50%;
     transform: translateY(-50%);
     align-self: center;
@@ -66,26 +66,12 @@
     letter-spacing: 0;
   }
 
-  :deep(.v-field__input > input[readonly]::placeholder) {
+  :deep(.v-text-field .v-field__input > input[readonly]::placeholder) {
     font-family: var(--df-font-body);
     font-size: 0.875rem;
     line-height: 1.25rem;
     letter-spacing: 0;
     opacity: var(--v-disabled-opacity);
-  }
-
-  :deep(.v-select__selection) {
-    display: inline-flex;
-    align-items: center;
-    min-height: 1.25rem;
-    margin-inline: 0;
-  }
-
-  :deep(.v-select__selection-text) {
-    font-family: var(--df-font-body);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    letter-spacing: 0;
   }
 
   :deep(.v-text-field .v-field__input > input) {
