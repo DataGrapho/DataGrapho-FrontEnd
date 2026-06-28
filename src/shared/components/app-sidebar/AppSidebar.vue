@@ -118,20 +118,26 @@
         label="Configuração"
         to="/app/configuracoes"
       />
+      <AppSidebarActionButton
+        icon="logout-box-r-line"
+        label="Sair"
+        title="Sair da conta"
+        @click="handleLogout"
+      />
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
   import { computed } from 'vue'
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import AppSidebarActionButton from './AppSidebarActionButton.vue'
   import AppSidebarNavLink from './AppSidebarNavLink.vue'
   import {
     hasSuperuserAccess,
     hasUserManagementAccess,
   } from '@/features/auth/services/user-permissions.service'
-  import { getAuthenticatedSession } from '@/features/auth/services/auth-session.service'
+  import { getAuthenticatedSession, clearAuthenticatedSession } from '@/features/auth/services/auth-session.service'
   import { useAppTheme } from '@/shared/composables/useAppTheme'
 
   defineProps<{
@@ -144,9 +150,15 @@
 
   const { isDarkTheme, toggleTheme } = useAppTheme()
   const route = useRoute()
+  const router = useRouter()
   const session = getAuthenticatedSession()
   const canAccessAdministration = hasSuperuserAccess(session)
   const canManageUsers = hasUserManagementAccess(session)
+
+  function handleLogout() {
+    clearAuthenticatedSession()
+    void router.push({ name: 'login' })
+  }
 
   const bottomNavItemCount = computed(() => {
     let count = 3
