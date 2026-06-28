@@ -11,11 +11,11 @@ import {
 import type { ChatApiResponse, ChatSummary, SendMessagePayload } from '@/features/chat/types/chat.types'
 
 const CHAT_ENDPOINTS = {
-  chats: '/api/chatbot/sessions/',
-  chatMessages: (chatId: string) => `/api/chatbot/sessions/${chatId}/`,
-  renameChat: (chatId: string) => `/api/chatbot/sessions/${chatId}/`,
-  deleteChat: (chatId: string) => `/api/chatbot/sessions/${chatId}/`,
-  sendMessage: '/api/chatbot/chat/',
+  chats: '/chatbot/sessions/',
+  chatMessages: (chatId: string) => `/chatbot/sessions/${chatId}/`,
+  renameChat: (chatId: string) => `/chatbot/sessions/${chatId}/`,
+  deleteChat: (chatId: string) => `/chatbot/sessions/${chatId}/`,
+  sendMessage: '/chatbot/chat/',
 } as const
 
 async function fetchWithAuth(endpoint: string, init: RequestInit): Promise<Response> {

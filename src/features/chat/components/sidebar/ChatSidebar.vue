@@ -63,6 +63,14 @@
           @delete="$emit('delete-chat', chat.id)"
         />
       </section>
+      
+      <div class="chat-sidebar__footer">
+        <ChatSidebarActionButton 
+          icon-class="ri-logout-box-r-line" 
+          label="Sair" 
+          @click="$emit('logout')"
+        />
+      </div>
     </div>
   </aside>
 </template>
@@ -93,6 +101,7 @@
     'rename-chat': [chatId: string]
     'delete-chat': [chatId: string]
     'close-mobile': []
+    logout: []
   }>()
 
   const isMobileViewport = ref(window.innerWidth <= 900)
@@ -251,8 +260,16 @@
 
   .chat-sidebar__content {
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: var(--df-space-lg);
+    overflow: hidden;
+  }
+  
+  .chat-sidebar__footer {
+    margin-top: auto;
+    padding-top: var(--df-space-md);
+    border-top: 1px solid rgb(var(--v-theme-grey-lighten-3));
   }
 
   .chat-sidebar__actions {

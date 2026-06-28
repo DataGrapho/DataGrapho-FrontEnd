@@ -25,6 +25,7 @@
             @search="handleSearchChat"
             @select-chat="handleSelectChat"
             @toggle="toggleChatSidebar"
+            @logout="handleLogout"
           />
         </slot>
       </aside>
@@ -63,11 +64,12 @@
 
 <script setup lang="ts">
   import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import AppSidebar from '@/shared/components/app-sidebar/AppSidebar.vue'
   import ChatSidebar from '@/features/chat/components/sidebar/ChatSidebar.vue'
   import { useAppTheme } from '@/shared/composables/useAppTheme'
   import { useChatMessages } from '@/features/chat/composables/useChatMessages'
+  import { clearAuthenticatedSession } from '@/features/auth/services/auth-session.service'
 
   const props = withDefaults(
     defineProps<{
@@ -86,6 +88,7 @@
   const isMobileChatMenuOpen = ref(false)
   const isMobileViewport = ref(window.innerWidth <= 900)
   const route = useRoute()
+  const router = useRouter()
   const {
     activeChatId,
     chats,
@@ -153,6 +156,11 @@
 
   function handleDeleteChat(chatId: string) {
     void removeChat(chatId)
+  }
+
+  function handleLogout() {
+    clearAuthenticatedSession()
+    void router.push({ name: 'login' })
   }
 
   function syncViewportState () {
