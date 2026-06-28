@@ -45,6 +45,13 @@ async function sendUserMessage (content: string) {
 
     sessionId.value = response.data.session_id
 
+    // Se é uma nova sessão, atualizar o activeChatId
+    if (!activeChatId.value || activeChatId.value !== sessionId.value) {
+      activeChatId.value = sessionId.value
+      // Atualizar a lista de chats para incluir a nova sessão
+      await refreshChats()
+    }
+
     assistantMessage.createdAt = new Date()
 
     await streamAssistantResponse(
@@ -52,6 +59,10 @@ async function sendUserMessage (content: string) {
       response.data.response,
       response.data.tools_used
     )
+    
+    // Atualizar a lista de chats após receber a resposta
+    await refreshChats()
+    
   } catch (error) {
     const target = messages.value.find((message) => message.id === assistantMessage.id)
     if (target) {
