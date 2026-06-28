@@ -100,7 +100,13 @@ export async function listChatMessages(chatId: string): Promise<ChatApiResponse[
 async function parseJsonResponse<T>(response: Response): Promise<T> {
   if (!response.ok) throw await buildApiError(response)
   const data = await response.json()
-  if (data?.success === false) throw new Error(data.error || 'Erro ao processar requisição')
+  
+  // Se success é false, lançar erro
+  if (data?.success === false) {
+    throw new Error(data.error || data.message || 'Erro ao processar requisição')
+  }
+  
+  // Se tem data, retornar data, senão retornar o objeto inteiro
   return (data?.data ?? data) as T
 }
 
