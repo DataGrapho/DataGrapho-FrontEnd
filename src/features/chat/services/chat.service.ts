@@ -11,10 +11,10 @@ import {
 import type { ChatApiResponse, ChatSummary, SendMessagePayload } from '@/features/chat/types/chat.types'
 
 const CHAT_ENDPOINTS = {
-  chats: '/api/chatbot/chats/',
-  chatMessages: (chatId: string) => `/api/chatbot/chats/${chatId}/messages/`,
-  renameChat: (chatId: string) => `/api/chatbot/chats/${chatId}/`,
-  deleteChat: (chatId: string) => `/api/chatbot/chats/${chatId}/`,
+  chats: '/api/chatbot/sessions/',
+  chatMessages: (chatId: string) => `/api/chatbot/sessions/${chatId}/`,
+  renameChat: (chatId: string) => `/api/chatbot/sessions/${chatId}/`,
+  deleteChat: (chatId: string) => `/api/chatbot/sessions/${chatId}/`,
   sendMessage: '/api/chatbot/chat/',
 } as const
 
