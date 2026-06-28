@@ -34,6 +34,15 @@ async function sendUserMessage (content: string) {
       session_id: sessionId.value,
     })
 
+    // Validação defensiva: garantir que response.data existe
+    if (!response || !response.data) {
+      throw new Error('Resposta inválida do servidor')
+    }
+
+    if (!response.data.session_id) {
+      throw new Error('Session ID não retornado pelo servidor')
+    }
+
     sessionId.value = response.data.session_id
 
     assistantMessage.createdAt = new Date()

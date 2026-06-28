@@ -29,7 +29,9 @@ export async function sendMessage(payload: SendMessagePayload): Promise<ChatApiR
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     })
-    return await parseJsonResponse<ChatApiResponse>(response)
+    // parseJsonResponse retorna apenas o 'data', não o wrapper { success, data }
+    const data = await parseJsonResponse<ChatApiResponse['data']>(response)
+    return { success: true, data }
   } catch (error) {
     if (!isChatNotFoundError(error)) throw error
     return buildMockChatResponse(payload)
@@ -99,15 +101,26 @@ export async function listChatMessages(chatId: string): Promise<ChatApiResponse[
 
 async function parseJsonResponse<T>(response: Response): Promise<T> {
   if (!response.ok) throw await buildApiError(response)
-  const data = await response.json()
   
-  // Se success é false, lançar erro
+  let data: any
+  try {
+    data = await response.json()
+  } catch (parseError) {
+    throw new Error('Resposta inválida do servidor')
+  }
+  
+  // Se success é false, lançar erro com a mensagem do backend
   if (data?.success === false) {
-    throw new Error(data.error || data.message || 'Erro ao processar requisição')
+    const errorMsg = data.error || data.message || 'Erro ao processar requisição'
+    throw new Error(errorMsg)
   }
   
   // Se tem data, retornar data, senão retornar o objeto inteiro
-  return (data?.data ?? data) as T
+  if (data?.data !== undefined && data?.data !== null) {
+    return data.data as T
+  }
+  
+  return data as T
 }
 
 async function buildApiError(response: Response): Promise<Error> {
