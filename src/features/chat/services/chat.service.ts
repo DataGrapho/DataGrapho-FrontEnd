@@ -8,7 +8,7 @@ import {
   listMockChats,
   renameMockChat,
 } from '@/features/chat/mocks/chat.mock'
-import type { ChatApiResponse, ChatSummary, SendMessagePayload } from '@/features/chat/types/chat.types'
+import type { ChatApiResponse, ChatSessionDetail, ChatSummary, SendMessagePayload } from '@/features/chat/types/chat.types'
 
 const CHAT_ENDPOINTS = {
   chats: '/chatbot/sessions/',
@@ -17,6 +17,8 @@ const CHAT_ENDPOINTS = {
   deleteChat: (chatId: string) => `/chatbot/sessions/${chatId}/`,
   sendMessage: '/chatbot/chat/',
 } as const
+
+const CHAT_MOCKS_ENABLED = import.meta.env.VITE_ENABLE_CHAT_MOCKS === 'true'
 
 async function fetchWithAuth(endpoint: string, init: RequestInit): Promise<Response> {
   return fetchWithBearerAuth(`${API_BASE_URL}${endpoint}`, init)
@@ -33,7 +35,7 @@ export async function sendMessage(payload: SendMessagePayload): Promise<ChatApiR
     const data = await parseJsonResponse<ChatApiResponse['data']>(response)
     return { success: true, data }
   } catch (error) {
-    if (!isChatNotFoundError(error)) throw error
+    if (!CHAT_MOCKS_ENABLED || !isChatNotFoundError(error)) throw error
     return buildMockChatResponse(payload)
   }
 }
@@ -46,7 +48,7 @@ export async function listChats(search = ''): Promise<ChatSummary[]> {
     const response = await fetchWithAuth(endpoint, { method: 'GET' })
     return await parseJsonResponse<ChatSummary[]>(response)
   } catch (error) {
-    if (!isChatNotFoundError(error)) throw error
+    if (!CHAT_MOCKS_ENABLED || !isChatNotFoundError(error)) throw error
     return listMockChats(search)
   }
 }
@@ -60,7 +62,7 @@ export async function createChat(title?: string): Promise<ChatSummary> {
     })
     return await parseJsonResponse<ChatSummary>(response)
   } catch (error) {
-    if (!isChatNotFoundError(error)) throw error
+    if (!CHAT_MOCKS_ENABLED || !isChatNotFoundError(error)) throw error
     return createMockChat(title)
   }
 }
@@ -74,7 +76,7 @@ export async function renameChat(chatId: string, title: string): Promise<ChatSum
     })
     return await parseJsonResponse<ChatSummary>(response)
   } catch (error) {
-    if (!isChatNotFoundError(error)) throw error
+    if (!CHAT_MOCKS_ENABLED || !isChatNotFoundError(error)) throw error
     return renameMockChat(chatId, title)
   }
 }
@@ -84,17 +86,17 @@ export async function deleteChat(chatId: string): Promise<void> {
     const response = await fetchWithAuth(CHAT_ENDPOINTS.deleteChat(chatId), { method: 'DELETE' })
     if (!response.ok) throw await buildApiError(response)
   } catch (error) {
-    if (!isChatNotFoundError(error)) throw error
+    if (!CHAT_MOCKS_ENABLED || !isChatNotFoundError(error)) throw error
     deleteMockChat(chatId)
   }
 }
 
-export async function listChatMessages(chatId: string): Promise<ChatApiResponse['data']> {
+export async function listChatMessages(chatId: string): Promise<ChatSessionDetail> {
   try {
     const response = await fetchWithAuth(CHAT_ENDPOINTS.chatMessages(chatId), { method: 'GET' })
-    return await parseJsonResponse<ChatApiResponse['data']>(response)
+    return await parseJsonResponse<ChatSessionDetail>(response)
   } catch (error) {
-    if (!isChatNotFoundError(error)) throw error
+    if (!CHAT_MOCKS_ENABLED || !isChatNotFoundError(error)) throw error
     return listMockChatMessages(chatId)
   }
 }

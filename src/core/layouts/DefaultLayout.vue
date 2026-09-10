@@ -136,7 +136,7 @@
   }
 
   function handleSelectChat(chatId: string) {
-    setActiveChat(chatId)
+    void setActiveChat(chatId)
     isMobileChatMenuOpen.value = false
   }
 

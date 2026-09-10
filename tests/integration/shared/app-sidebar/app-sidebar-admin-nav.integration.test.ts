@@ -13,6 +13,7 @@ vi.mock('@/features/auth/services/auth-session.service', () => ({
 
 vi.mock('vue-router', () => ({
   useRoute: () => ({ name: 'app-chat' }),
+  useRouter: () => ({ push: vi.fn() }),
 }))
 
 vi.mock('@/shared/composables/useAppTheme', () => ({

@@ -1,7 +1,7 @@
-import type { ChatApiResponse, ChatSummary, SendMessagePayload } from '@/features/chat/types/chat.types'
+import type { ChatApiResponse, ChatSessionDetail, ChatSummary, SendMessagePayload } from '@/features/chat/types/chat.types'
 
 const mockChats = new Map<string, ChatSummary>()
-const mockMessages = new Map<string, ChatApiResponse['data']>()
+const mockMessages = new Map<string, ChatSessionDetail>()
 
 export function listMockChats(search: string): ChatSummary[] {
   const term = search.trim().toLowerCase()
@@ -46,13 +46,15 @@ export function deleteMockChat(chatId: string) {
   mockMessages.delete(chatId)
 }
 
-export function listMockChatMessages(chatId: string): ChatApiResponse['data'] {
+export function listMockChatMessages(chatId: string): ChatSessionDetail {
+  const now = new Date().toISOString()
   return (
     mockMessages.get(chatId) ?? {
-      response: '',
-      session_id: chatId,
-      tools_used: [],
-      tool_calls_count: 0,
+      id: chatId,
+      title: mockChats.get(chatId)?.title ?? 'Novo chat',
+      createdAt: now,
+      updatedAt: now,
+      messages: [],
     }
   )
 }
@@ -89,7 +91,18 @@ export function buildMockChatResponse(payload: SendMessagePayload): ChatApiRespo
     tools_used: ['mock-chat-service'],
     tool_calls_count: 0,
   }
-  mockMessages.set(chatId, data)
+  const previousMessages = mockMessages.get(chatId)?.messages ?? []
+  mockMessages.set(chatId, {
+    id: chatId,
+    title: chat.title,
+    createdAt: chat.createdAt,
+    updatedAt: now,
+    messages: [
+      ...previousMessages,
+      { id: Date.now(), role: 'user', content: payload.message, createdAt: now },
+      { id: Date.now() + 1, role: 'assistant', content: responseText, createdAt: now },
+    ],
+  })
 
   return { success: true, data }
 }

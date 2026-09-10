@@ -36,6 +36,21 @@ export interface ChatMessage {
   toolsUsed?: string[]
 }
 
+export interface ChatSessionMessage {
+  id: number
+  role: ChatRole
+  content: string
+  createdAt: string
+}
+
+export interface ChatSessionDetail {
+  id: string
+  title: string
+  createdAt: string
+  updatedAt: string
+  messages: ChatSessionMessage[]
+}
+
 export type ChatScrollDirection = 'up' | 'down' | 'idle'
 
 export interface SendMessagePayload {

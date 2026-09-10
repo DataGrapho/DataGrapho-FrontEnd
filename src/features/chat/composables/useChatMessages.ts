@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import type { ChatMessage, ChatSessionState, ChatSummary, ChatViewport } from '@/features/chat/types/chat.types'
-import { createChat, deleteChat, listChats, renameChat, sendMessage } from '@/features/chat/services/chat.service'
+import { createChat, deleteChat, listChatMessages, listChats, renameChat, sendMessage } from '@/features/chat/services/chat.service'
 
 export function useChatMessages () {
   return chatStore
@@ -120,9 +120,10 @@ async function refreshChats () {
 
 async function startNewChat () {
   const chat = await createChat('Novo chat')
-  activeChatId.value = chat.id
-  await refreshChats()
   clearSession()
+  activeChatId.value = chat.id
+  sessionId.value = chat.id
+  await refreshChats()
   syncSessionState()
 }
 
@@ -151,8 +152,35 @@ function setSearchTerm (term: string) {
   searchTerm.value = term
 }
 
-function setActiveChat (chatId: string | null) {
+async function setActiveChat (chatId: string | null) {
   activeChatId.value = chatId
+  messages.value = []
+
+  if (!chatId) {
+    sessionId.value = undefined
+    syncSessionState()
+    return
+  }
+
+  sessionId.value = chatId
+  syncSessionState()
+
+  try {
+    const session = await listChatMessages(chatId)
+    if (activeChatId.value !== chatId) return
+    messages.value = session.messages.map(message => ({
+      id: String(message.id),
+      role: message.role,
+      content: message.content,
+      status: 'complete',
+      state: 'completed',
+      createdAt: new Date(message.createdAt),
+      chatId,
+    }))
+  } catch {
+    if (activeChatId.value === chatId) messages.value = []
+  }
+  syncSessionState()
 }
 
 function setViewport (value: ChatViewport) {
