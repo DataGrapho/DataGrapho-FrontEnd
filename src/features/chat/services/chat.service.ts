@@ -108,7 +108,7 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
   try {
     data = await response.json()
   } catch (parseError) {
-    throw new Error('Resposta inválida do servidor')
+    throw new Error('Resposta inválida do servidor', { cause: parseError })
   }
   
   // Se success é false, lançar erro com a mensagem do backend

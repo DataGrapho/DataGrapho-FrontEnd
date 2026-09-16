@@ -28,7 +28,14 @@
         {{ feedbackMessage }}
       </p>
 
-      <Button class="text-body-base-bold" type="submit" size="lg" block :disabled="isSubmitting" :loading="isSubmitting">
+      <Button
+        class="text-body-base-bold"
+        type="submit"
+        size="lg"
+        block
+        :disabled="isSubmitting"
+        :loading="isSubmitting"
+      >
         Trocar senha
       </Button>
     </AuthForm>

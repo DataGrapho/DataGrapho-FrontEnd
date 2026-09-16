@@ -16,10 +16,12 @@
             class="app-sidebar__logo"
             src="@/assets/images/Icone datafit.webp"
           >
+
           <v-icon class="app-sidebar__toggle-icon-rail app-sidebar__icon" size="20">
             <Icon name="sidebar-unfold-line" />
           </v-icon>
         </span>
+
         <v-icon class="app-sidebar__toggle-icon-right app-sidebar__icon" size="20">
           <Icon name="sidebar-fold-line" />
         </v-icon>
@@ -33,12 +35,14 @@
         label="Chatbot IA"
         to="/app"
       />
+
       <AppSidebarNavLink
         :active="route.name === 'app-de-para'"
         icon="table-view"
         label="De/Para"
         to="/app/de-para"
       />
+
       <AppSidebarNavLink
         v-if="canAccessAdministration"
         :active="route.name === 'app-administration'"
@@ -46,6 +50,7 @@
         label="Administracao"
         to="/app/administracao"
       />
+
       <AppSidebarNavLink
         v-if="canManageUsers"
         :active="route.name === 'app-manage-users'"
@@ -61,6 +66,7 @@
         class="app-sidebar__bottom-indicator"
         :style="bottomNavIndicatorStyle"
       />
+
       <RouterLink
         class="app-sidebar__bottom-link"
         :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-settings' }"
@@ -69,6 +75,7 @@
         <Icon name="settings-3-line" />
         <span>Configuração</span>
       </RouterLink>
+
       <RouterLink
         class="app-sidebar__bottom-link"
         :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-de-para' }"
@@ -77,6 +84,7 @@
         <Icon name="table-view" />
         <span>De/Para</span>
       </RouterLink>
+
       <RouterLink
         class="app-sidebar__bottom-link"
         :class="{ 'app-sidebar__bottom-link--active': route.name === 'app-chat' }"
@@ -85,6 +93,7 @@
         <Icon name="chat-ai-4-line" />
         <span>Chatbot IA</span>
       </RouterLink>
+
       <RouterLink
         v-if="canManageUsers"
         class="app-sidebar__bottom-link"
@@ -94,6 +103,7 @@
         <Icon name="shield-user-line" />
         <span>Usuarios</span>
       </RouterLink>
+
       <RouterLink
         v-if="canAccessAdministration"
         class="app-sidebar__bottom-link"
@@ -112,12 +122,14 @@
         :title="isDarkTheme ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
         @click="toggleTheme"
       />
+
       <AppSidebarNavLink
         :active="route.name === 'app-settings'"
         icon="settings-3-line"
         label="Configuração"
         to="/app/configuracoes"
       />
+
       <AppSidebarActionButton
         icon="logout-box-r-line"
         label="Sair"

@@ -1,6 +1,7 @@
 <template>
   <button class="chat-sidebar__recent-item" :class="{ 'chat-sidebar__recent-item--active': active }" type="button" @click="$emit('select')">
     <span class="chat-sidebar__recent-item-text">{{ label }}</span>
+
     <ActionMenu :items="recentActions" title="Acoes do chat" @select="handleAction">
       <template #activator="{ props: menuProps }">
         <button

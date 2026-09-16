@@ -6,6 +6,7 @@
       class="detail-view-fields__cell"
     >
       <dt class="text-label-base">{{ field.label }}</dt>
+
       <dd class="text-body-small">
         <slot :name="`field-${field.key}`" :value="field.value">
           {{ formatValue(field.value) }}

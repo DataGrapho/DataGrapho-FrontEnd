@@ -5,10 +5,12 @@
         <span class="detail-view-section__icon" aria-hidden="true">
           <Icon :name="icon" :size="16" />
         </span>
+
         <h3 class="detail-view-section__title text-label-large">
           {{ title }}
         </h3>
       </div>
+
       <span
         v-if="count !== undefined"
         class="detail-view-section__count text-body-caption"

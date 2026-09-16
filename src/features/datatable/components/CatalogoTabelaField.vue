@@ -40,6 +40,7 @@
       <label class="catalogo-tabela-field__label text-label-base" :for="selectId">
         Catalogo / Tabela
       </label>
+
       <v-text-field
         :id="selectId"
         :error="Boolean(error)"

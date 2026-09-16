@@ -26,7 +26,14 @@
         :messages="errorMessage"
       />
 
-      <Button class="text-body-base-bold" type="submit" size="lg" block :disabled="isSubmitting" :loading="isSubmitting">
+      <Button
+        class="text-body-base-bold"
+        type="submit"
+        size="lg"
+        block
+        :disabled="isSubmitting"
+        :loading="isSubmitting"
+      >
         Entrar
       </Button>
 
@@ -61,7 +68,7 @@
     password: '',
   })
   function validateEmail(value: string) {
-    return /\S+@\S+\.\S+/.test(value)
+    return /\S[^\s@]*@\S+\.\S+/.test(value)
   }
 
   function validateForm() {

@@ -3,6 +3,7 @@
     <header class="access-form__header">
       <div class="access-form__title-row">
         <h2 class="access-form__title text-label-large">Acessos</h2>
+
         <v-tooltip
           text="Opcional. Empresa e perfil sao obrigatorios por linha. Filial e setor sao opcionais."
           location="top"

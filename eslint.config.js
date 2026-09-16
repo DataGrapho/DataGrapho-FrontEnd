@@ -1,6 +1,13 @@
 import vuetify from 'eslint-config-vuetify'
+import vue from 'eslint-plugin-vue'
 
-export default [
+export default vuetify(
+  {
+    antfu: false,
+    perfectionist: false,
+    stylistic: false,
+    unicorn: false,
+  },
   {
     ignores: [
       'node_modules/',
@@ -9,6 +16,16 @@ export default [
       'coverage/',
       '*.min.js',
     ],
+    rules: {
+      'curly': 'off',
+      'vue/attributes-order': 'off',
+    },
   },
-  ...vuetify(),
-]
+  {
+    files: ['**/*.vue'],
+    plugins: { vue },
+    rules: {
+      'vue/custom-event-name-casing': 'off',
+    },
+  },
+)

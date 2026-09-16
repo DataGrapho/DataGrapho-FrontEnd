@@ -11,6 +11,7 @@
         <v-card-title class="admin-user-dialog__title text-display-h6">
           {{ isEditing ? 'Editar usuario' : 'Adicionar usuario' }}
         </v-card-title>
+
         <button
           type="button"
           class="admin-user-dialog__close"
@@ -70,6 +71,7 @@
         >
           Cancelar
         </Button>
+
         <Button
           block
           size="md"

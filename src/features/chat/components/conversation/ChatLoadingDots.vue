@@ -1,8 +1,8 @@
 <template>
   <div class="chat-loading-dots">
-    <span class="chat-loading-dots__dot"></span>
-    <span class="chat-loading-dots__dot"></span>
-    <span class="chat-loading-dots__dot"></span>
+    <span class="chat-loading-dots__dot" />
+    <span class="chat-loading-dots__dot" />
+    <span class="chat-loading-dots__dot" />
   </div>
 </template>
 

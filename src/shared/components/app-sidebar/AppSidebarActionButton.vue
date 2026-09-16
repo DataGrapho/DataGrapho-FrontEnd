@@ -12,6 +12,7 @@
         </v-icon>
       </slot>
     </span>
+
     <span class="app-sidebar-action__label text-body-small">{{ label }}</span>
   </button>
 </template>

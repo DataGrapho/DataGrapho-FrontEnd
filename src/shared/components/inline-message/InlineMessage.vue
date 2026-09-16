@@ -25,7 +25,7 @@
   type InlineMessageAlign = 'center' | 'start'
 
   const props = withDefaults(defineProps<{
-    messages: string | string[]
+    messages?: string | string[]
     variant?: InlineMessageVariant
     align?: InlineMessageAlign
   }>(), {

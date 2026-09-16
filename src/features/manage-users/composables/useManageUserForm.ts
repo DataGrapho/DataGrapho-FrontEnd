@@ -30,7 +30,7 @@ import {
   roleToFlags,
 } from '@/features/manage-users/config/manage-users-role.config'
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
 const PASSWORD_MIN_LENGTH = 6
 
 function buildDefaultAccessDraft(overrides: Partial<ManageUsersAccessDraft> = {}): ManageUsersAccessDraft {

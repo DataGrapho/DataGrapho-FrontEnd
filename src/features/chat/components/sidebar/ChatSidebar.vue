@@ -31,6 +31,7 @@
             <button class="chat-sidebar__search-back" type="button" @click="closeSearch">
               <v-icon icon="mdi-arrow-left" size="18" />
             </button>
+
             <input
               :value="localSearch"
               class="chat-sidebar__search text-body-small"

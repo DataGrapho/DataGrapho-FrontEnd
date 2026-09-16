@@ -80,9 +80,9 @@ export type DeparaTableRow = DeparaListItem & {
 }
 
 export type EditableDeparaRow = DeparaListItem & {
+  [key: string]: unknown
   newCatalogoTabela?: string | null
   _rowKey: string
   _isNew?: boolean
   _isDirty?: boolean
-  [key: string]: unknown
 }

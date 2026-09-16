@@ -20,6 +20,7 @@
       <p class="detail-view-list-item__title text-body-small">
         {{ title }}
       </p>
+
       <p
         v-if="subtitle"
         class="detail-view-list-item__subtitle text-body-caption"
@@ -33,6 +34,7 @@
         v-if="showStatus"
         :active="active"
       />
+
       <Icon
         v-if="showChevron"
         name="arrow-right-s-line"

@@ -14,6 +14,7 @@
                 @update:model-value="togglePageSelection(Boolean($event))"
               />
             </th>
+
             <th
               v-for="column in columns"
               :key="column.key"
@@ -29,6 +30,7 @@
                   @click="toggleSort(column.key)"
                 >
                   <span class="base-datatable__header-label">{{ column.label }}</span>
+
                   <span
                     class="base-datatable__sort-icon"
                     :class="{ 'base-datatable__sort-icon--active': sortState.key === column.key }"
@@ -36,6 +38,7 @@
                     <Icon :name="getSortIcon(column.key)" />
                   </span>
                 </button>
+
                 <span v-else class="base-datatable__header-label">
                   {{ column.label }}
                 </span>
@@ -50,16 +53,19 @@
               Carregando dados...
             </td>
           </tr>
+
           <tr v-else-if="error">
             <td :colspan="columns.length + (selectable ? 1 : 0)" class="base-datatable__state base-datatable__state--error">
               {{ error }}
             </td>
           </tr>
+
           <tr v-else-if="sortedRows.length === 0">
             <td :colspan="columns.length + (selectable ? 1 : 0)" class="base-datatable__state">
               {{ emptyText }}
             </td>
           </tr>
+
           <tr
             v-for="row in paginatedRows"
             v-else
@@ -84,6 +90,7 @@
                 @mousedown="handleCheckboxPointerDown(row, $event)"
               />
             </td>
+
             <td
               v-for="column in columns"
               :key="`${row[rowKey]}-${column.key}`"
@@ -118,6 +125,7 @@
           :menu-props="{ contentClass: 'base-datatable__select-menu' }"
           variant="outlined"
         />
+
         <v-btn
           :disabled="currentPage <= 1"
           class="base-datatable__pagination-button"
@@ -127,9 +135,11 @@
         >
           <Icon name="arrow-left-s-line" />
         </v-btn>
+
         <span class="base-datatable__page text-body-small">
           {{ currentPage }} / {{ pageCount }}
         </span>
+
         <v-btn
           :disabled="currentPage >= pageCount"
           class="base-datatable__pagination-button"
@@ -158,6 +168,7 @@
             <v-icon icon="mdi-pencil-outline" size="16" />
           </template>
         </v-list-item>
+
         <v-list-item
           title="Excluir"
           @click="handleContextDelete"

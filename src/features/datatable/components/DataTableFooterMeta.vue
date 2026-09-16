@@ -4,10 +4,12 @@
       <p class="datatable-footer-meta__selection text-body-small">
         {{ selectedCount }} {{ selectedCount === 1 ? 'item selecionado' : 'itens selecionados' }}
       </p>
+
       <p class="datatable-footer-meta__hint text-body-caption">
         Use Ctrl ou Shift para selecionar varios.
       </p>
     </template>
+
     <p v-else class="datatable-footer-meta__range text-body-small">
       {{ rangeText }}
     </p>

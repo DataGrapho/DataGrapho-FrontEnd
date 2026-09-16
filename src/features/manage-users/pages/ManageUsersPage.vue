@@ -10,6 +10,7 @@
       <header class="manage-users-page__header">
         <div class="manage-users-page__title-block">
           <h1 class="manage-users-page__title text-display-h4">Gerenciar usuarios</h1>
+
           <p class="manage-users-page__subtitle text-body-small">
             Crie e edite contas da sua empresa.
           </p>

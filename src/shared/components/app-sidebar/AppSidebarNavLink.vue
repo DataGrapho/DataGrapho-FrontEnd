@@ -9,6 +9,7 @@
         <Icon :name="icon" />
       </v-icon>
     </span>
+
     <span class="app-sidebar-item__label text-body-small">{{ label }}</span>
   </RouterLink>
 </template>

@@ -3,6 +3,7 @@
     <div class="chat-sidebar__rail-slot">
       <i :class="[iconClass, 'chat-sidebar__icon']" />
     </div>
+
     <span class="chat-sidebar__label">{{ label }}</span>
   </button>
 </template>

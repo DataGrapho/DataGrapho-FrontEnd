@@ -12,6 +12,7 @@
         variant="outlined"
         @update:model-value="emit('update:searchModel', $event ?? '')"
       />
+
       <Button type="button" @click="emit('add')">
         <Icon name="add-line" />
         <span>{{ addLabel }}</span>

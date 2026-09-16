@@ -18,7 +18,14 @@
         {{ feedbackMessage }}
       </p>
 
-      <Button class="text-body-base-bold" type="submit" size="lg" block :disabled="isButtonDisabled" :loading="isSubmitting">
+      <Button
+        class="text-body-base-bold"
+        type="submit"
+        size="lg"
+        block
+        :disabled="isButtonDisabled"
+        :loading="isSubmitting"
+      >
         {{ submitButtonLabel }}
       </Button>
 
@@ -54,7 +61,7 @@
   )
 
   function validateEmail(value: string) {
-    return /\S+@\S+\.\S+/.test(value)
+    return /\S[^\s@]*@\S+\.\S+/.test(value)
   }
 
   function stopCooldownTimer() {

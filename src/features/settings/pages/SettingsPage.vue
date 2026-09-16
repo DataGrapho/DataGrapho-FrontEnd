@@ -3,6 +3,7 @@
     <header class="settings-page__header">
       <div>
         <h1 class="settings-page__title text-display-h4">Configuração</h1>
+
         <p class="settings-page__subtitle text-body-small">
           Visualize seus dados, preferências e segurança da conta.
         </p>
@@ -24,6 +25,7 @@
           v-if="loading"
           type="text@3"
         />
+
         <DetailViewFieldsGrid
           v-else
           :fields="userFields"

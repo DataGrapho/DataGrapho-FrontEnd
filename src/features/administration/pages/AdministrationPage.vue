@@ -10,6 +10,7 @@
       <header class="administration-page__header">
         <div>
           <h1 class="administration-page__title text-display-h4">Administracao</h1>
+
           <p class="administration-page__subtitle text-body-small">
             Cadastre empresas, filiais, setores e perfis.
           </p>
@@ -119,6 +120,7 @@
         <Input v-model="empresaForm.nome" field-label="Nome" placeholder="Nome da empresa" />
         <Input v-model="empresaForm.cnpj" field-label="CNPJ" placeholder="00.000.000/0000-00" />
         <Input v-model="empresaForm.endereco" field-label="Endereco" placeholder="Endereco completo" />
+
         <FormSelect
           v-model="empresaForm.ativo"
           field-label="Status"
@@ -145,8 +147,10 @@
           item-value="id_empresa"
           placeholder="Selecione a empresa"
         />
+
         <Input v-model="filialForm.nome" field-label="Nome" placeholder="Nome da filial" />
         <Input v-model="filialForm.endereco" field-label="Endereco" placeholder="Endereco completo" />
+
         <FormSelect
           v-model="filialForm.ativo"
           field-label="Status"
@@ -173,8 +177,10 @@
           item-value="id_filial"
           placeholder="Selecione a filial"
         />
+
         <Input v-model="setorForm.nome" field-label="Nome" placeholder="Nome do setor" />
         <Input v-model="setorForm.descricao" field-label="Descricao" placeholder="Descricao do setor" />
+
         <FormSelect
           v-model="setorForm.ativo"
           field-label="Status"
@@ -194,6 +200,7 @@
       >
         <Input v-model="perfilForm.nome" field-label="Nome" placeholder="Nome do perfil" />
         <Input v-model="perfilForm.descricao" field-label="Descricao" placeholder="Descricao do perfil" />
+
         <FormSelect
           v-model="perfilForm.ativo"
           field-label="Status"

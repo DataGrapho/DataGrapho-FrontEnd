@@ -4,6 +4,7 @@
       <div class="datatable-page__header-main">
         <div class="datatable-page__title-block">
           <h1 class="datatable-page__title text-display-h4">De/Para</h1>
+
           <p class="datatable-page__subtitle text-body-small">
             Edite em grade ou adicione itens pelo formulario.
           </p>
@@ -56,17 +57,17 @@
         @delete-rows="handleDeleteViewRows"
         @edit-row="handleEditViewRow"
       >
-      <template #cell-id_depara="{ value }">
-        <span class="datatable-page__numeric">{{ formatDeparaCellValue('id_depara', value) }}</span>
-      </template>
+        <template #cell-id_depara="{ value }">
+          <span class="datatable-page__numeric">{{ formatDeparaCellValue('id_depara', value) }}</span>
+        </template>
 
-      <template #cell-ativo="{ value }">
-        <DataTableStatusChip :active="Boolean(value)" />
-      </template>
+        <template #cell-ativo="{ value }">
+          <DataTableStatusChip :active="Boolean(value)" />
+        </template>
 
-      <template #cell-criado_em="{ value }">
-        {{ formatDeparaDate(value) }}
-      </template>
+        <template #cell-criado_em="{ value }">
+          {{ formatDeparaDate(value) }}
+        </template>
       </BaseDataTable>
 
       <EditableDataTable
@@ -85,9 +86,9 @@
         @delete-rows="handleDeleteRows"
         @edit-row="openEditDialog"
       >
-      <template #cell-criado_em="{ value }">
-        {{ formatDeparaDate(value) }}
-      </template>
+        <template #cell-criado_em="{ value }">
+          {{ formatDeparaDate(value) }}
+        </template>
       </EditableDataTable>
     </div>
 

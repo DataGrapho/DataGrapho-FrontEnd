@@ -14,6 +14,7 @@
                 @update:model-value="togglePageSelection(Boolean($event))"
               />
             </th>
+
             <th
               v-for="column in columns"
               :key="column.key"
@@ -29,6 +30,7 @@
                   @click="toggleSort(column.key)"
                 >
                   <span class="editable-datatable__header-label">{{ column.label }}</span>
+
                   <span
                     class="editable-datatable__sort-icon"
                     :class="{ 'editable-datatable__sort-icon--active': sortState.key === column.key }"
@@ -36,6 +38,7 @@
                     <Icon :name="getSortIcon(column.key)" />
                   </span>
                 </button>
+
                 <span v-else class="editable-datatable__header-label">
                   {{ column.label }}
                 </span>
@@ -50,16 +53,19 @@
               Carregando dados...
             </td>
           </tr>
+
           <tr v-else-if="error">
             <td :colspan="columns.length + (selectable ? 1 : 0)" class="editable-datatable__state editable-datatable__state--error">
               {{ error }}
             </td>
           </tr>
+
           <tr v-else-if="paginatedEditableRows.length === 0">
             <td :colspan="columns.length + (selectable ? 1 : 0)" class="editable-datatable__state">
               {{ emptyText }}
             </td>
           </tr>
+
           <tr
             v-for="row in paginatedEditableRows"
             v-else
@@ -82,6 +88,7 @@
                 @mousedown="handleCheckboxPointerDown(row, $event)"
               />
             </td>
+
             <td
               v-for="column in columns"
               :key="`${row._rowKey}-${column.key}`"
@@ -97,6 +104,7 @@
                 :new-catalogo-tabela="row.newCatalogoTabela"
                 @change="emit('catalog-update', row._rowKey, $event)"
               />
+
               <component
                 :is="resolveEditor(column)"
                 v-else-if="column.editable"
@@ -106,6 +114,7 @@
                 :options="column.editOptions ?? []"
                 @update:model-value="emit('cell-update', row._rowKey, column.key, $event)"
               />
+
               <slot
                 v-else
                 :name="`cell-${column.key}`"
@@ -116,6 +125,7 @@
               </slot>
             </td>
           </tr>
+
           <tr v-if="showAddRow && !loading && !error" class="editable-datatable__add-row">
             <td :colspan="columns.length + (selectable ? 1 : 0)">
               <button class="editable-datatable__add-button" type="button" @click="emit('add-row')">
@@ -144,6 +154,7 @@
           :menu-props="{ contentClass: 'editable-datatable__select-menu' }"
           variant="outlined"
         />
+
         <v-btn
           :disabled="currentPage <= 1"
           class="editable-datatable__pagination-button"
@@ -153,9 +164,11 @@
         >
           <Icon name="arrow-left-s-line" />
         </v-btn>
+
         <span class="editable-datatable__page text-body-small">
           {{ currentPage }} / {{ pageCount }}
         </span>
+
         <v-btn
           :disabled="currentPage >= pageCount"
           class="editable-datatable__pagination-button"
@@ -184,6 +197,7 @@
             <v-icon icon="mdi-pencil-outline" size="16" />
           </template>
         </v-list-item>
+
         <v-list-item
           title="Excluir"
           @click="handleContextDelete"

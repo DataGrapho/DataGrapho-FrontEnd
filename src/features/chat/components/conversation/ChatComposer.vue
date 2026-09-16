@@ -41,8 +41,7 @@
   }>()
 
   const emit = defineEmits<{
-    (e: 'focus'): void
-    (e: 'submit'): void
+    (e: 'focus' | 'submit'): void
     (e: 'update:modelValue', value: string): void
   }>()
 </script>

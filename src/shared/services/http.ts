@@ -58,13 +58,13 @@ export async function requestJson<TResponse> (
   path: string,
   options: RequestInit & { query?: Record<string, QueryValue> } = {},
 ) {
-  let response = await executeFetch(path, options)
+  const response = await executeFetch(path, options)
 
   if (response.status === 204 || response.status === 205) {
     return { success: true } as TResponse
   }
 
-  let body = await parseResponse(response)
+  const body = await parseResponse(response)
 
   if (response.status === 401) {
     const retriedBody = await retryRequestAfterUnauthorized(path, options, async (retryPath, retryOptions) => {

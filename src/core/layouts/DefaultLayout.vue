@@ -47,6 +47,7 @@
           >
             <i class="ri-menu-line" />
           </button>
+
           <h1 class="text-label-large">
             {{ pageTitle }}
           </h1>

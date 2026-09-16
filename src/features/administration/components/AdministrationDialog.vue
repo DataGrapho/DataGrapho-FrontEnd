@@ -11,6 +11,7 @@
         <v-card-title class="administration-dialog__title text-display-h6">
           {{ title }}
         </v-card-title>
+
         <button
           type="button"
           class="administration-dialog__close"
@@ -44,6 +45,7 @@
         >
           Cancelar
         </Button>
+
         <Button
           block
           size="md"

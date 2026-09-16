@@ -12,10 +12,12 @@
           <h2 class="detail-view-dialog__title text-display-h6">
             {{ title }}
           </h2>
+
           <p v-if="subtitle" class="detail-view-dialog__subtitle text-body-small">
             {{ subtitle }}
           </p>
         </div>
+
         <button
           type="button"
           class="detail-view-dialog__close"
@@ -33,6 +35,7 @@
           :messages="errorMessage"
           align="start"
         />
+
         <slot />
       </v-card-text>
 
@@ -46,6 +49,7 @@
           <Icon name="edit-box-line" :size="18" />
           <span>Editar</span>
         </Button>
+
         <button
           type="button"
           class="detail-view-dialog__delete"
@@ -57,6 +61,7 @@
             class="detail-view-dialog__delete-spinner"
             aria-hidden="true"
           />
+
           <Icon v-else name="delete-bin-line" :size="18" />
           <span>Excluir</span>
         </button>
