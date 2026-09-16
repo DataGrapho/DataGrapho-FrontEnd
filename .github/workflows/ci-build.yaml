@@ -6,7 +6,7 @@ on:
     types:
       - completed
     branches:
-      - 'release/**'
+      - 'main'
     secrets:
       DOCKERHUB_USERNAME:
         required: true

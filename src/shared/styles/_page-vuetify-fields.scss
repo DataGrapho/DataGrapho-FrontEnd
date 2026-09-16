@@ -1,0 +1,83 @@
+@use '@/shared/styles/form-vuetify-control' as form-control;
+
+@mixin page-search-field {
+  @include form-control.form-vuetify-control;
+
+  :deep(.v-field) {
+    border-radius: var(--df-radius-base);
+    background: rgb(var(--v-theme-surface));
+  }
+
+  :deep(.v-field__input),
+  :deep(input::placeholder) {
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0;
+  }
+}
+
+@mixin page-toolbar-button {
+  :deep(.button) {
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
+  }
+}
+
+@mixin page-form-field {
+  @include form-control.form-vuetify-control;
+}
+
+@mixin page-form-select {
+  @include page-form-field;
+
+  :deep(.v-label) {
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0;
+  }
+}
+
+@mixin page-tabs {
+  :deep(.v-tab) {
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+}
+
+@mixin page-checkbox {
+  :deep(.v-label) {
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0;
+    color: rgb(var(--v-theme-on-surface));
+    opacity: 1;
+  }
+}
+
+@mixin page-dialog-title {
+  font-family: var(--df-font-display);
+  letter-spacing: 0;
+}
+
+@mixin page-subtitle {
+  margin: 4px 0 0;
+  color: rgb(var(--v-theme-on-surface-variant));
+  font-family: var(--df-font-body);
+  letter-spacing: 0;
+}
+
+@mixin page-select-menu {
+  .v-list-item-title {
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0;
+  }
+}

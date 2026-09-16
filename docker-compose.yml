@@ -1,0 +1,10 @@
+services:
+  front:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: https://pendengas.com.br/api
+    container_name: datagrapho_frontend
+    ports:
+      - "127.0.0.1:4173:80"
+    restart: unless-stopped

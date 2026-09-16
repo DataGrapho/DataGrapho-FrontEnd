@@ -1,0 +1,47 @@
+@mixin content-page-shell {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  flex: 1;
+  width: 100%;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  box-sizing: border-box;
+
+  @media (max-width: 900px) {
+    padding: 12px;
+  }
+}
+
+@mixin content-page-table-host {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+
+  :deep(.base-datatable),
+  :deep(.editable-datatable) {
+    min-height: 0;
+    flex: 1 1 auto;
+  }
+}
+
+@mixin content-page-title {
+  margin: 0;
+  color: rgb(var(--v-theme-on-surface));
+}
+
+@mixin content-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  @media (max-width: 900px) {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,172 @@
+@mixin select-control-shell(
+  $height,
+  $padding-x,
+  $font-size,
+  $line-height,
+  $outline-color: var(--v-border-color),
+  $outline-color-focused: rgb(var(--v-theme-primary))
+) {
+  :deep(.v-field) {
+    border-radius: var(--df-radius-base);
+    background: rgb(var(--v-theme-surface));
+    min-height: $height;
+    font-size: $font-size;
+  }
+
+  :deep(.v-field__outline) {
+    color: $outline-color;
+  }
+
+  :deep(.v-field--focused .v-field__outline) {
+    color: $outline-color-focused;
+  }
+
+  :deep(.v-field__field) {
+    align-items: center;
+  }
+
+  :deep(.v-field__input) {
+    display: flex;
+    align-items: center;
+    min-height: $height;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-inline: $padding-x;
+    gap: 0;
+  }
+
+  :deep(.v-field__input > input) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :deep(.v-select__selection) {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    min-height: $line-height;
+    margin: 0;
+  }
+
+  :deep(.v-field__append-inner),
+  :deep(.v-field__prepend-inner),
+  :deep(.v-field__clearable) {
+    align-items: center;
+    align-self: center;
+    padding-top: 0;
+  }
+
+  .select-control__text {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--df-font-body);
+    font-size: $font-size;
+    line-height: $line-height;
+    letter-spacing: 0;
+    color: rgb(var(--v-theme-on-surface));
+  }
+
+  .select-control-host__placeholder {
+    position: absolute;
+    top: 0;
+    left: $padding-x;
+    right: 36px;
+    display: flex;
+    align-items: center;
+    height: $height;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+    font-family: var(--df-font-body);
+    font-size: $font-size;
+    line-height: $line-height;
+    letter-spacing: 0;
+    color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity, 0.38));
+  }
+}
+
+@mixin select-control-form {
+  --v-input-control-height: 40px;
+  --v-field-padding-top: 0px;
+  --v-field-padding-bottom: 0px;
+  --v-input-padding-top: 0px;
+  --v-field-input-padding-top: 0px;
+  --v-field-input-padding-bottom: 0px;
+
+  @include select-control-shell(40px, 12px, 0.875rem, 1.25rem);
+
+  :deep(.v-field--variant-outlined) {
+    --v-field-padding-bottom: 0px;
+  }
+
+  :deep(.v-input__details) {
+    padding-inline: 0;
+    min-height: 0;
+  }
+
+  :deep(.v-messages__message) {
+    font-family: var(--df-font-body);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0;
+  }
+
+  :deep(.v-input--error .v-messages__message) {
+    color: rgb(var(--v-theme-error));
+  }
+}
+
+@mixin select-control-inline {
+  --v-field-border-width: 1px;
+
+  @include select-control-shell(
+    28px,
+    8px,
+    0.8125rem,
+    1.125rem,
+    rgba(var(--v-theme-on-surface), 0.16),
+    rgb(var(--v-theme-primary))
+  );
+
+  :deep(.v-field__clearable) {
+    margin-inline-end: 0;
+    padding-inline-end: 2px;
+  }
+
+  :deep(.v-field__clearable .v-icon) {
+    font-size: 14px;
+    opacity: 0.55;
+  }
+
+  :deep(.v-input__details) {
+    padding-inline: 0;
+    min-height: 0;
+  }
+
+  :deep(.v-messages__message) {
+    font-family: var(--df-font-body);
+    font-size: 0.8rem;
+    line-height: 1.125rem;
+    letter-spacing: 0;
+  }
+
+  :deep(.v-input--error .v-messages__message) {
+    color: rgb(var(--v-theme-error));
+  }
+}
