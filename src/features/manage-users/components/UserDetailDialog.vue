@@ -42,6 +42,12 @@
         />
       </ul>
     </DetailViewSection>
+
+    <DominioAcessoPanel
+      v-if="user"
+      nivel="usuario"
+      :alvo-id="user.id_usuario"
+    />
   </DetailViewDialog>
 </template>
 
@@ -52,6 +58,7 @@
   import DetailViewListItem from '@/shared/components/detail-view-dialog/DetailViewListItem.vue'
   import DetailViewSection from '@/shared/components/detail-view-dialog/DetailViewSection.vue'
   import DataTableStatusChip from '@/features/datatable/components/DataTableStatusChip.vue'
+  import DominioAcessoPanel from '@/features/administration/components/DominioAcessoPanel.vue'
   import type { ManageUsersListItem } from '@/features/manage-users/types/manage-users.types'
 
   const props = defineProps<{

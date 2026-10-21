@@ -159,6 +159,12 @@
           :items="STATUS_OPTIONS"
           placeholder="Status"
         />
+
+        <DominioAcessoPanel
+          v-if="editingFilialId"
+          nivel="filial"
+          :alvo-id="editingFilialId"
+        />
       </AdministrationDialog>
 
       <AdministrationDialog
@@ -188,6 +194,12 @@
           item-value="value"
           :items="STATUS_OPTIONS"
           placeholder="Status"
+        />
+
+        <DominioAcessoPanel
+          v-if="editingSetorId"
+          nivel="setor"
+          :alvo-id="editingSetorId"
         />
       </AdministrationDialog>
 
@@ -221,6 +233,7 @@
   import InlineMessage from '@/shared/components/inline-message/InlineMessage.vue'
   import { STATUS_OPTIONS } from '@/shared/constants/status-options'
   import AdministrationDialog from '@/features/administration/components/AdministrationDialog.vue'
+  import DominioAcessoPanel from '@/features/administration/components/DominioAcessoPanel.vue'
   import AdministrationEntityTab from '@/features/administration/components/AdministrationEntityTab.vue'
   import EmpresaDetailDialog from '@/features/administration/components/EmpresaDetailDialog.vue'
   import { useAdministration } from '@/features/administration/composables/useAdministration'
