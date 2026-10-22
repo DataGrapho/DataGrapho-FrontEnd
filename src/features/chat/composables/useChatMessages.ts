@@ -1,9 +1,22 @@
 import { ref } from 'vue'
 import type { ChatMessage, ChatSessionState, ChatSummary, ChatViewport } from '@/features/chat/types/chat.types'
 import { createChat, deleteChat, listChatMessages, listChats, renameChat, sendMessage } from '@/features/chat/services/chat.service'
+import { getAuthenticatedSession } from '@/features/auth/services/auth-session.service'
 
 export function useChatMessages () {
+  syncChatOwner()
   return chatStore
+}
+
+// O estado do chat é compartilhado por todos os componentes. Ao trocar de conta, descartamos
+// o estado da conta anterior para que mensagens e sessões não apareçam para o novo usuário.
+let chatOwnerAccountId: string | null | undefined
+
+function syncChatOwner () {
+  const accountId = getAuthenticatedSession()?.accountId ?? null
+  if (chatOwnerAccountId === accountId) return
+  resetChatState()
+  chatOwnerAccountId = accountId
 }
 
 const messages = ref<ChatMessage[]>([])
@@ -108,6 +121,21 @@ async function streamAssistantResponse (
 function clearSession() {
   sessionId.value = undefined
   messages.value = []
+}
+
+function resetChatState () {
+  sessionId.value = undefined
+  activeChatId.value = null
+  messages.value = []
+  chats.value = []
+  searchTerm.value = ''
+  isResponding.value = false
+  sessionState.value = {
+    activeChatId: null,
+    visibleHistory: [],
+    searchTerm: '',
+    viewport: viewport.value,
+  }
 }
 
 async function refreshChats () {
